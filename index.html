@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knight Frank | Lease Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        kf: {
+                            red: '#CF0A2C',     /* Knight Frank Red */
+                            dark: '#242424',    /* Charcoal */
+                            gray: '#F5F5F5',    /* Light Gray */
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { -webkit-print-color-adjust: exact; }
+        
+        /* Hero Animation */
+        .hero-bg {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        /* Swift Slider */
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%;
+            background: #CF0A2C; margin-top: -8px; cursor: grab;
+            box-shadow: 0 0 0 4px rgba(207, 10, 44, 0.15);
+            transition: transform 0.1s;
+        }
+        input[type=range]::-webkit-slider-thumb:active { transform: scale(1.1); cursor: grabbing; }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 4px; cursor: pointer; background: #E2E8F0; border-radius: 2px;
+        }
+
+        /* Utilities */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        @media print {
+            body { background-color: white; }
+            .no-print { display: none !important; }
+            .hero-bg { background: white !important; height: auto !important; padding: 0 !important; }
+            .hero-content { color: black !important; text-align: left !important; padding: 0 !important; }
+        }
+
+        /* View Transitions */
+        .hidden-view { display: none; opacity: 0; }
+        .active-view { display: block; opacity: 1; animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-kf-gray text-kf-dark min-h-screen flex flex-col font-sans antialiased selection:bg-kf-red selection:text-white">
+
+    <!-- TOP NAVIGATION -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 h-20 flex justify-between items-center">
+            <!-- Logo -->
+            <div class="flex items-center gap-4 cursor-pointer" onclick="goHome()">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/7/73/Knight_Frank_Logo.svg" 
+                     alt="Knight Frank" class="h-8 md:h-10 object-contain">
+            </div>
+            
+            <!-- Global Actions -->
+            <div class="flex items-center gap-3 no-print">
+                <!-- Excel Button (Only shows inside simulator) -->
+                <button id="btnExcel" onclick="downloadExcel()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded text-sm font-medium transition flex items-center gap-2 shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    <span>Excel</span>
+                </button>
+
+                <!-- Print Button (Only shows inside simulator) -->
+                <button id="btnPrint" onclick="window.print()" class="hidden bg-kf-dark hover:bg-black text-white px-4 py-2 rounded text-sm font-medium transition flex items-center gap-2 shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                    <span>Print</span>
+                </button>
+
+                <!-- Back Button -->
+                <button id="btnBack" onclick="goHome()" class="hidden text-sm font-medium text-slate-500 hover:text-kf-red px-3 py-2 transition">
+                    Switch Mode
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- VIEW 1: HERO & HOME SELECTION -->
+    <div id="viewHome" class="active-view w-full">
+        <!-- Hero Section -->
+        <div class="hero-bg h-[50vh] min-h-[400px] flex items-center justify-center text-center px-4 relative">
+            <div class="hero-content max-w-3xl mx-auto text-white z-10 animate-fade-in-up">
+                <span class="inline-block py-1 px-3 rounded-full bg-kf-red/90 text-xs font-bold tracking-widest uppercase mb-4">Financial Tools</span>
+                <h1 class="text-4xl md:text-6xl font-serif font-bold mb-6 leading-tight">Commercial Lease <br/>Simulator</h1>
+                <p class="text-lg md:text-xl text-slate-200 font-light max-w-2xl mx-auto">
+                    Instantly project cash flows, amortization strategies, and occupancy costs with Knight Frank's precision modeling tool.
+                </p>
+            </div>
+            <!-- Decorative Bottom Fade -->
+            <div class="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-kf-gray to-transparent"></div>
+        </div>
+
+        <!-- Selection Cards -->
+        <div class="max-w-5xl mx-auto px-4 -mt-16 pb-20 relative z-20">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- Card 1 -->
+                <div onclick="loadView('conventional')" class="group bg-white p-8 rounded-xl shadow-lg border border-transparent hover:border-kf-red/30 cursor-pointer transition-all duration-300 transform hover:-translate-y-2 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-bl-full -mr-16 -mt-16 transition-colors group-hover:bg-red-50"></div>
+                    <div class="relative z-10">
+                        <div class="w-12 h-12 rounded bg-kf-red text-white flex items-center justify-center mb-6 shadow-lg shadow-red-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                        </div>
+                        <h2 class="text-2xl font-serif font-bold text-kf-dark mb-2 group-hover:text-kf-red transition-colors">Conventional Lease</h2>
+                        <p class="text-slate-500 mb-8 leading-relaxed">
+                            Standard commercial terms with Capex amortization logic. Ideal for Warm Shell, Builder Fit-out, or 3rd Party financing scenarios.
+                        </p>
+                        <div class="flex items-center text-sm font-bold text-kf-red uppercase tracking-wider group-hover:gap-2 transition-all">
+                            Start Analysis <span class="ml-2">&rarr;</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div onclick="loadView('managed')" class="group bg-white p-8 rounded-xl shadow-lg border border-transparent hover:border-kf-red/30 cursor-pointer transition-all duration-300 transform hover:-translate-y-2 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-bl-full -mr-16 -mt-16 transition-colors group-hover:bg-red-50"></div>
+                    <div class="relative z-10">
+                        <div class="w-12 h-12 rounded bg-kf-dark text-white flex items-center justify-center mb-6 shadow-lg shadow-slate-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        </div>
+                        <h2 class="text-2xl font-serif font-bold text-kf-dark mb-2 group-hover:text-kf-red transition-colors">Managed Office</h2>
+                        <p class="text-slate-500 mb-8 leading-relaxed">
+                            Flexible workspace solutions. Calculate all-inclusive costs based on "Per Seat" or "Per Sq.Ft" pricing models efficiently.
+                        </p>
+                        <div class="flex items-center text-sm font-bold text-kf-dark uppercase tracking-wider group-hover:gap-2 transition-all">
+                            Start Analysis <span class="ml-2">&rarr;</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN SIMULATOR CONTENT -->
+    <main class="max-w-7xl mx-auto w-full px-4 md:px-8 pb-12">
+
+        <!-- VIEW 2: CONVENTIONAL SIMULATOR -->
+        <div id="viewConventional" class="hidden-view mt-8">
+            <div class="flex flex-col md:flex-row md:items-center gap-3 mb-8 border-b border-slate-200 pb-6">
+                <h2 class="text-3xl font-serif font-bold text-kf-dark">Conventional Lease</h2>
+                <span class="px-3 py-1 bg-kf-red/10 text-kf-red text-xs font-bold uppercase rounded-full tracking-wider md:ml-2 w-fit">Financial Projection</span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- INPUTS -->
+                <div class="lg:col-span-4 space-y-6 no-print">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-kf-red"></div> Lease Terms
+                        </h3>
+                        <div class="space-y-5">
+                            <div><label class="text-sm font-semibold text-slate-700 mb-1 block">Area (Sq.Ft)</label><input type="number" id="convArea" value="10000" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded focus:border-kf-red focus:ring-1 focus:ring-kf-red outline-none transition"></div>
+                            <div><label class="text-sm font-semibold text-slate-700 mb-1 block">Base Rent (PSF)</label><input type="number" id="convRent" value="85" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded focus:border-kf-red focus:ring-1 focus:ring-kf-red outline-none transition"></div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div><label class="text-sm font-semibold text-slate-700 mb-1 block">Tenure (Yrs)</label><input type="number" id="convTenure" value="5" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded focus:border-kf-red focus:ring-1 focus:ring-kf-red outline-none transition"></div>
+                                <div><label class="text-sm font-semibold text-slate-700 mb-1 block">Escalation %</label><input type="number" id="convEscPct" value="15" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded focus:border-kf-red focus:ring-1 focus:ring-kf-red outline-none transition"></div>
+                            </div>
+                            <div><label class="text-sm font-semibold text-slate-700 mb-1 block">Frequency</label>
+                                <select id="convFreq" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded focus:border-kf-red outline-none">
+                                    <option value="1">Yearly (YoY)</option>
+                                    <option value="2">Every 2 Years</option>
+                                    <option value="3" selected>Every 3 Years</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-kf-dark"></div> Fit-out Model
+                        </h3>
+                        <div class="grid grid-cols-2 gap-2 bg-slate-100 p-1 rounded-lg mb-6">
+                            <button onclick="setConvType('warm')" id="btnConvWarm" class="py-2 text-xs font-bold rounded shadow bg-white text-kf-red col-span-2 transition-all">Warm Shell</button>
+                            <button onclick="setConvType('builder')" id="btnConvBuilder" class="py-2 text-xs font-bold rounded text-slate-500 hover:text-slate-800 transition-all">Builder</button>
+                            <button onclick="setConvType('3rd')" id="btnConv3rd" class="py-2 text-xs font-bold rounded text-slate-500 hover:text-slate-800 transition-all">3rd Party</button>
+                            <button onclick="setConvType('self')" id="btnConvSelf" class="py-2 text-xs font-bold rounded text-slate-500 col-span-2 mt-1 border-t border-slate-200 hover:text-slate-800 transition-all">Self Fit-out (Capex Only)</button>
+                        </div>
+                        
+                        <div id="convFitoutInputs" class="hidden space-y-5 animate-fade-in">
+                            <div>
+                                <label class="text-sm font-semibold text-slate-700 mb-1 block">Estimated Capex (Per Sq.Ft)</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-2.5 text-slate-400">₹</span>
+                                    <input type="number" id="convCapex" value="2500" class="w-full pl-8 p-2.5 bg-slate-50 border border-slate-200 rounded focus:border-kf-red outline-none transition">
+                                </div>
+                            </div>
+                            <div id="convFactorWrapper">
+                                <div class="flex justify-between mb-2"><label class="text-sm font-semibold text-slate-700">Amortization Factor</label><span id="convFactorDisplay" class="text-xs font-bold text-kf-red bg-red-50 px-2 py-1 rounded">3.0</span></div>
+                                <input type="range" id="convFactor" min="1.5" max="4.0" step="0.05" value="3.0">
+                                <div class="flex justify-between text-[10px] text-slate-400 mt-1 font-medium"><span>1.5</span><span>4.0</span></div>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 p-4 rounded-lg flex justify-between items-center">
+                                <span class="text-xs font-medium text-slate-500">Rent Impact</span>
+                                <span id="convImpact" class="font-bold text-kf-red text-sm">+ ₹0 PSF</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OUTPUTS -->
+                <div class="lg:col-span-8 space-y-6">
+                    <!-- KPI Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-white p-5 rounded-lg border-l-4 border-kf-dark shadow-sm hover:shadow-md transition-all">
+                            <div class="text-[10px] text-slate-400 uppercase font-bold tracking-widest mb-1">Total Contract Value</div>
+                            <div id="convTCV" class="text-2xl font-bold text-kf-dark">₹0</div>
+                        </div>
+                        <div class="bg-white p-5 rounded-lg border-l-4 border-kf-red shadow-sm hover:shadow-md transition-all">
+                            <div class="text-[10px] text-slate-400 uppercase font-bold tracking-widest mb-1">Starting Rent (PSF)</div>
+                            <div id="convStartRent" class="text-2xl font-bold text-kf-dark">₹0</div>
+                        </div>
+                        <div class="bg-white p-5 rounded-lg border-l-4 border-emerald-600 shadow-sm hover:shadow-md transition-all">
+                            <div class="text-[10px] text-slate-400 uppercase font-bold tracking-widest mb-1">Monthly Outflow</div>
+                            <div id="convMonthly" class="text-2xl font-bold text-kf-dark">₹0</div>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm">
+                        <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                            <h3 class="font-bold text-slate-700 flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-kf-red"></span> Cash Flow Schedule
+                            </h3>
+                            <span id="convBadge" class="text-[10px] font-bold uppercase bg-white border border-slate-200 px-2 py-1 rounded text-slate-500 tracking-wider">WARM SHELL</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left">
+                                <thead class="bg-slate-50 border-b border-slate-200 text-xs text-slate-500 uppercase tracking-wider">
+                                    <tr>
+                                        <th class="px-6 py-4 font-semibold">Year</th>
+                                        <th class="px-6 py-4 text-right font-semibold">Base Rent</th>
+                                        <th class="px-6 py-4 text-right font-semibold conv-fit-col hidden text-kf-red">Fitout</th>
+                                        <th class="px-6 py-4 text-right font-bold text-kf-dark">Total PSF</th>
+                                        <th class="px-6 py-4 text-right font-semibold">Monthly</th>
+                                        <th class="px-6 py-4 text-right font-semibold">Annual</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="convTableBody" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 3: MANAGED OFFICE SIMULATOR -->
+        <div id="viewManaged" class="hidden-view mt-8">
+            <div class="flex flex-col md:flex-row md:items-center gap-3 mb-8 border-b border-slate-200 pb-6">
+                <h2 class="text-3xl font-serif font-bold text-kf-dark">Managed Office</h2>
+                <span class="px-3 py-1 bg-kf-dark/10 text-kf-dark text-xs font-bold uppercase rounded-full tracking-wider md:ml-2 w-fit">Cost Estimator</span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- INPUTS -->
+                <div class="lg:col-span-4 space-y-6 no-print">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-kf-dark"></div> Cost Model
+                        </h3>
+                        
+                        <div class="grid grid-cols-2 bg-slate-100 p-1 rounded-lg mb-6">
+                            <button onclick="setMgdMode('seat')" id="btnMgdSeat" class="py-2 text-xs font-bold rounded shadow bg-white text-kf-dark transition-all">Per Seat</button>
+                            <button onclick="setMgdMode('area')" id="btnMgdArea" class="py-2 text-xs font-bold rounded text-slate-500 hover:text-slate-800 transition-all">Per Sq.Ft</button>
+                        </div>
+
+                        <div class="space-y-5">
+                            <div>
+                                <label id="lblMgdQty" class="text-sm font-semibold text-slate-700 mb-1 block">No. of Seats</label>
+                                <input type="number" id="mgdQty" value="50" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded focus:border-kf-red outline-none transition font-mono">
+                            </div>
+                            <div>
+                                <label id="lblMgdPrice" class="text-sm font-semibold text-slate-700 mb-1 block">Price per Seat (Monthly)</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-2.5 text-slate-400">₹</span>
+                                    <input type="number" id="mgdPrice" value="15000" class="w-full pl-8 p-2.5 bg-slate-50 border border-slate-200 rounded focus:border-kf-red outline-none transition font-mono">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div><label class="text-sm font-semibold text-slate-700 mb-1 block">Tenure (Yrs)</label><input type="number" id="mgdTenure" value="3" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded focus:border-kf-red outline-none transition"></div>
+                                <div><label class="text-sm font-semibold text-slate-700 mb-1 block">Escalation %</label><input type="number" id="mgdEscPct" value="5" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded focus:border-kf-red outline-none transition"></div>
+                            </div>
+                            <div><label class="text-sm font-semibold text-slate-700 mb-1 block">Frequency</label>
+                                <select id="mgdFreq" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded focus:border-kf-red outline-none">
+                                    <option value="1" selected>Yearly (YoY)</option>
+                                    <option value="2">Every 2 Years</option>
+                                    <option value="3">Every 3 Years</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-50 p-4 rounded border border-blue-100 text-xs text-blue-800 leading-relaxed">
+                        <strong>Note:</strong> Managed office pricing typically includes Rent, CAM, Fit-out, and Utility expenses. Amortization is built-in to the operator's price.
+                    </div>
+                </div>
+
+                <!-- OUTPUTS -->
+                <div class="lg:col-span-8 space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white p-5 rounded-lg border-l-4 border-kf-dark shadow-sm">
+                            <div class="text-[10px] text-slate-400 uppercase font-bold tracking-widest mb-1">Total Contract Value</div>
+                            <div id="mgdTCV" class="text-2xl font-bold text-kf-dark">₹0</div>
+                        </div>
+                        <div class="bg-white p-5 rounded-lg border-l-4 border-kf-red shadow-sm">
+                            <div class="text-[10px] text-slate-400 uppercase font-bold tracking-widest mb-1">Monthly Outflow (Yr 1)</div>
+                            <div id="mgdMonthly" class="text-2xl font-bold text-kf-dark">₹0</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg border border-slate-200 overflow-hidden shadow-sm">
+                        <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+                            <h3 class="font-bold text-slate-700 flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-kf-dark"></span> Payment Schedule
+                            </h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left">
+                                <thead class="bg-slate-50 border-b border-slate-200 text-xs text-slate-500 uppercase tracking-wider">
+                                    <tr>
+                                        <th class="px-6 py-4 font-semibold">Year</th>
+                                        <th class="px-6 py-4 text-right font-semibold">Rate <span id="thMgdRateUnit" class="lowercase text-slate-400 font-normal">(per seat)</span></th>
+                                        <th class="px-6 py-4 text-right font-semibold">Monthly Total</th>
+                                        <th class="px-6 py-4 text-right font-semibold">Annual Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="mgdTableBody" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-200 py-8 mt-auto no-print">
+        <div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="text-center md:text-left">
+                <p class="text-[10px] text-slate-400 uppercase tracking-wider mb-1">Powered by</p>
+                <p class="text-sm font-bold text-kf-dark">Knight Frank Occupier Strategy & Solutions</p>
+            </div>
+            <div class="text-center md:text-right">
+                <p class="text-xs font-bold text-slate-600">Designed by Vijay</p>
+            </div>
+        </div>
+    </footer>
+
+<script>
+    // --- GLOBAL UTILS ---
+    const fmtMoney = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 });
+    const fmtDec = new Intl.NumberFormat('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    
+    // Data Store for Excel Export
+    let exportData = [];
+    let currentExportMode = ''; // 'conventional' or 'managed'
+
+    // --- NAVIGATION ---
+    function loadView(viewName) {
+        // Hide all views
+        ['viewHome', 'viewConventional', 'viewManaged'].forEach(id => {
+            const el = document.getElementById(id);
+            el.classList.remove('active-view');
+            el.classList.add('hidden-view');
+        });
+
+        // Toggle Navbar Buttons
+        const navButtons = ['btnBack', 'btnPrint', 'btnExcel'];
+        if(viewName === 'home') {
+            document.getElementById('viewHome').classList.remove('hidden-view');
+            document.getElementById('viewHome').classList.add('active-view');
+            navButtons.forEach(id => document.getElementById(id).classList.add('hidden'));
+        } else {
+            document.getElementById(viewName === 'conventional' ? 'viewConventional' : 'viewManaged').classList.remove('hidden-view');
+            document.getElementById(viewName === 'conventional' ? 'viewConventional' : 'viewManaged').classList.add('active-view');
+            navButtons.forEach(id => document.getElementById(id).classList.remove('hidden'));
+            
+            currentExportMode = viewName;
+            if(viewName === 'conventional') calcConv();
+            else calcMgd();
+        }
+    }
+
+    function goHome() { loadView('home'); }
+
+    // --- CONVENTIONAL LOGIC ---
+    let convType = 'warm';
+
+    function setConvType(type) {
+        convType = type;
+        // Update Buttons UI
+        ['warm', 'builder', '3rd', 'self'].forEach(t => {
+            const btn = document.getElementById(t === '3rd' ? 'btnConv3rd' : 'btnConv' + t.charAt(0).toUpperCase() + t.slice(1));
+            const isActive = t === type;
+            
+            // Reset base classes
+            btn.className = `py-2 text-xs font-bold rounded transition-all ${t === 'self' ? 'col-span-2 mt-1 border-t' : 'col-span-2 md:col-span-1'}`;
+            
+            if (isActive) {
+                btn.classList.add('bg-white', 'shadow', 'text-kf-red');
+                if(t === 'self') btn.classList.add('border-transparent');
+            } else {
+                btn.classList.add('text-slate-500', 'hover:text-slate-800');
+                if(t === 'self') btn.classList.add('border-slate-200');
+            }
+        });
+
+        // Show/Hide Inputs
+        const inputsDiv = document.getElementById('convFitoutInputs');
+        const fitCols = document.querySelectorAll('.conv-fit-col');
+        const badge = document.getElementById('convBadge');
+        const factorWrap = document.getElementById('convFactorWrapper');
+
+        if(type === 'warm') {
+            inputsDiv.classList.add('hidden');
+            fitCols.forEach(c => c.classList.add('hidden'));
+            badge.innerText = "WARM SHELL";
+        } else {
+            inputsDiv.classList.remove('hidden');
+            fitCols.forEach(c => c.classList.remove('hidden'));
+            
+            if(type === 'self') {
+                factorWrap.classList.add('hidden');
+                badge.innerText = "SELF FIT-OUT";
+            } else {
+                factorWrap.classList.remove('hidden');
+                document.getElementById('convFactor').value = (type === 'builder') ? 3.0 : 2.0;
+                badge.innerText = (type === 'builder') ? "BUILDER FIT-OUT" : "3RD PARTY FIT-OUT";
+            }
+        }
+        calcConv();
+    }
+
+    function calcConv() {
+        exportData = []; // Reset
+        const area = parseFloat(document.getElementById('convArea').value) || 0;
+        const rent = parseFloat(document.getElementById('convRent').value) || 0;
+        const tenure = parseFloat(document.getElementById('convTenure').value) || 0;
+        const esc = parseFloat(document.getElementById('convEscPct').value) || 0;
+        const freq = parseInt(document.getElementById('convFreq').value);
+        const capex = parseFloat(document.getElementById('convCapex').value) || 0;
+        const factor = parseFloat(document.getElementById('convFactor').value) || 0;
+
+        let fitoutRent = 0;
+        if(convType === 'self') {
+            const totalMonths = tenure * 12;
+            if(totalMonths > 0) fitoutRent = (capex * area / totalMonths) / area;
+        } else if(convType !== 'warm') {
+            fitoutRent = (capex / 100) * factor;
+        }
+
+        document.getElementById('convFactorDisplay').innerText = factor.toFixed(2);
+        document.getElementById('convImpact').innerText = `+ ₹${fitoutRent.toFixed(2)} PSF`;
+
+        let totalVal = 0;
+        let currentBase = rent;
+        let html = '';
+
+        for(let y=1; y<=tenure; y++) {
+            if(y > 1 && (y-1)%freq === 0) currentBase = currentBase * (1 + esc/100);
+            
+            let totalPsf = currentBase + fitoutRent;
+            let monthly = totalPsf * area;
+            let annual = monthly * 12;
+            totalVal += annual;
+
+            // Save for Excel
+            exportData.push([y, currentBase.toFixed(2), fitoutRent.toFixed(2), totalPsf.toFixed(2), monthly.toFixed(0), annual.toFixed(0)]);
+
+            html += `<tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                <td class="px-6 py-4 font-medium text-kf-dark">Year ${y}</td>
+                <td class="px-6 py-4 text-right text-slate-600 font-mono">₹${fmtDec.format(currentBase)}</td>
+                ${convType !== 'warm' ? `<td class="px-6 py-4 text-right text-kf-red bg-red-50/50 font-mono font-medium">+ ₹${fmtDec.format(fitoutRent)}</td>` : ''}
+                <td class="px-6 py-4 text-right font-bold text-kf-dark font-mono">₹${fmtDec.format(totalPsf)}</td>
+                <td class="px-6 py-4 text-right text-slate-600 font-mono">${fmtMoney.format(monthly)}</td>
+                <td class="px-6 py-4 text-right text-slate-800 font-medium font-mono">${fmtMoney.format(annual)}</td>
+            </tr>`;
+        }
+
+        document.getElementById('convTableBody').innerHTML = html;
+        document.getElementById('convTCV').innerText = fmtMoney.format(totalVal);
+        document.getElementById('convStartRent').innerText = `₹${fmtDec.format(rent + fitoutRent)}`;
+        document.getElementById('convMonthly').innerText = fmtMoney.format((rent + fitoutRent) * area);
+    }
+
+
+    // --- MANAGED LOGIC ---
+    let mgdMode = 'seat';
+
+    function setMgdMode(mode) {
+        mgdMode = mode;
+        const btnSeat = document.getElementById('btnMgdSeat');
+        const btnArea = document.getElementById('btnMgdArea');
+        const lblQty = document.getElementById('lblMgdQty');
+        const lblPrice = document.getElementById('lblMgdPrice');
+        const thUnit = document.getElementById('thMgdRateUnit');
+        const qtyInput = document.getElementById('mgdQty');
+        const priceInput = document.getElementById('mgdPrice');
+
+        if(mode === 'seat') {
+            btnSeat.className = "py-2 text-xs font-bold rounded shadow bg-white text-kf-dark transition-all";
+            btnArea.className = "py-2 text-xs font-bold rounded text-slate-500 hover:text-slate-800 transition-all";
+            lblQty.innerText = "No. of Seats";
+            lblPrice.innerText = "Price per Seat (Monthly)";
+            thUnit.innerText = "(per seat)";
+            if(qtyInput.value > 5000) qtyInput.value = 50;
+            if(priceInput.value < 500) priceInput.value = 15000;
+        } else {
+            btnArea.className = "py-2 text-xs font-bold rounded shadow bg-white text-kf-dark transition-all";
+            btnSeat.className = "py-2 text-xs font-bold rounded text-slate-500 hover:text-slate-800 transition-all";
+            lblQty.innerText = "Area (Sq.Ft)";
+            lblPrice.innerText = "Rent per Sq.Ft (Monthly)";
+            thUnit.innerText = "(per sq.ft)";
+            if(qtyInput.value < 1000) qtyInput.value = 5000;
+            if(priceInput.value > 5000) priceInput.value = 150;
+        }
+        calcMgd();
+    }
+
+    function calcMgd() {
+        exportData = []; // Reset
+        const qty = parseFloat(document.getElementById('mgdQty').value) || 0;
+        const price = parseFloat(document.getElementById('mgdPrice').value) || 0;
+        const tenure = parseFloat(document.getElementById('mgdTenure').value) || 0;
+        const esc = parseFloat(document.getElementById('mgdEscPct').value) || 0;
+        const freq = parseInt(document.getElementById('mgdFreq').value);
+
+        let totalVal = 0;
+        let currentRate = price;
+        let html = '';
+
+        for(let y=1; y<=tenure; y++) {
+            if(y > 1 && (y-1)%freq === 0) currentRate = currentRate * (1 + esc/100);
+            
+            let monthly = currentRate * qty;
+            let annual = monthly * 12;
+            totalVal += annual;
+
+            // Save for Excel
+            exportData.push([y, currentRate.toFixed(2), monthly.toFixed(0), annual.toFixed(0)]);
+
+            html += `<tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                <td class="px-6 py-4 font-medium text-kf-dark">Year ${y}</td>
+                <td class="px-6 py-4 text-right text-slate-600 font-mono">₹${fmtMoney.format(currentRate).replace('₹','').split('.')[0]}</td>
+                <td class="px-6 py-4 text-right text-slate-600 font-mono">${fmtMoney.format(monthly)}</td>
+                <td class="px-6 py-4 text-right text-slate-800 font-bold font-mono">${fmtMoney.format(annual)}</td>
+            </tr>`;
+        }
+
+        document.getElementById('mgdTableBody').innerHTML = html;
+        document.getElementById('mgdTCV').innerText = fmtMoney.format(totalVal);
+        document.getElementById('mgdMonthly').innerText = fmtMoney.format(price * qty);
+    }
+
+    // --- EXCEL EXPORT ---
+    function downloadExcel() {
+        if (exportData.length === 0) return;
+
+        let csvContent = "data:text/csv;charset=utf-8,";
+        
+        if (currentExportMode === 'conventional') {
+            csvContent += "Year,Base Rent (PSF),Fitout Add-on (PSF),Total Rent (PSF),Monthly Cashflow,Annual Cashflow\n";
+        } else {
+            csvContent += `Year,Rate per ${mgdMode === 'seat' ? 'Seat' : 'SqFt'},Monthly Total,Annual Total\n`;
+        }
+
+        exportData.forEach(row => {
+            csvContent += row.join(",") + "\n";
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "knight_frank_lease_schedule.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // --- EVENT LISTENERS ---
+    ['convArea','convRent','convTenure','convEscPct','convFreq','convCapex','convFactor'].forEach(id => {
+        document.getElementById(id).addEventListener('input', calcConv);
+    });
+    ['mgdQty','mgdPrice','mgdTenure','mgdEscPct','mgdFreq'].forEach(id => {
+        document.getElementById(id).addEventListener('input', calcMgd);
+    });
+
+    // Init
+    setConvType('warm');
+    setMgdMode('seat');
+    // Trigger home animation
+    document.getElementById('viewHome').classList.add('active-view');
+
+</script>
+</body>
+</html>
