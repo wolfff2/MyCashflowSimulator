@@ -1,158 +1,253 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WOLFFF // CASHFLOW v37</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WOLFFF TECH // FINANCIAL INTELLIGENCE</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        bg: '#F5F7FA',
-                        surface: '#FFFFFF',
-                        text: '#0F172A',
-                        subtext: '#64748B',
-                        border: '#CBD5E1',
-                        blue: '#0066FF', /* Electric Blue */
-                        green: '#00C853', /* Vivid Emerald */
-                        red: '#EF4444',
+                        w: {
+                            bg: '#F8FAFC',       // Slate 50 (Paper White)
+                            surface: '#FFFFFF',  // Pure White
+                            text: '#0F172A',     // Slate 900 (Ink)
+                            sub: '#64748B',      // Slate 500 (Muted)
+                            border: '#E2E8F0',   // Slate 200
+                            accent: '#2563EB',   // Electric Blue
+                            cyan: '#06B6D4',     // Electric Cyan
+                            green: '#10B981',    // Success
+                        }
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
                         mono: ['JetBrains Mono', 'monospace'],
                     },
-                    boxShadow: {
-                        'card': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.06)',
-                        'hover': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)'
+                    animation: {
+                        'float': 'float 8s ease-in-out infinite',
+                        'gradient': 'gradient 15s ease infinite',
+                        'fade-up': 'fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                    },
+                    keyframes: {
+                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-20px)' } },
+                        gradient: { '0%, 100%': { backgroundPosition: '0% 50%' }, '50%': { backgroundPosition: '100% 50%' } },
+                        fadeUp: { '0%': { opacity: 0, transform: 'translateY(40px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } }
                     }
                 }
             }
         }
     </script>
     <style>
-        body { background-color: #F5F7FA; color: #0F172A; font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+        body { background-color: #F8FAFC; color: #0F172A; font-family: 'Inter', sans-serif; overflow-x: hidden; }
         
-        /* Inputs */
-        .input-label { font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; display: block; }
-        .input-field {
-            background-color: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 6px; 
-            color: #0F172A; font-size: 13px; padding: 8px 12px; width: 100%; transition: all 0.2s ease; font-weight: 500;
+        /* --- LANDING PAGE GRAPHICS --- */
+        .hero-bg {
+            position: absolute; inset: 0; overflow: hidden; z-index: -1;
+            background: radial-gradient(circle at 15% 50%, rgba(37, 99, 235, 0.03), transparent 40%),
+                        radial-gradient(circle at 85% 30%, rgba(6, 182, 212, 0.05), transparent 40%);
         }
-        .input-field:focus { border-color: #0066FF; box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1); outline: none; }
-        .input-field::placeholder { color: #94A3B8; opacity: 0.6; }
-
-        /* Table */
-        th { font-size: 11px; text-transform: uppercase; color: #64748B; font-weight: 700; padding: 12px 16px; border-bottom: 1px solid #E2E8F0; background: #F8FAFC; position: sticky; top: 0; white-space: nowrap; z-index: 10; }
-        td { font-size: 13px; padding: 10px 16px; border-bottom: 1px solid #F1F5F9; font-family: 'JetBrains Mono', monospace; white-space: nowrap; color: #334155; }
-        tr:last-child td { border-bottom: none; }
-        tr:hover { background-color: #F1F5F9; }
-
-        /* Nav Card */
-        .nav-card {
-            background: white; padding: 32px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border: 1px solid transparent; transition: all 0.2s ease; cursor: pointer;
+        .mesh-grid {
+            position: absolute; width: 200%; height: 200%; top: -50%; left: -50%;
+            background-image: linear-gradient(rgba(15, 23, 42, 0.03) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
+            background-size: 80px 80px;
+            transform: perspective(1000px) rotateX(60deg) rotateY(0deg) rotateZ(-15deg);
+            animation: gridPan 40s linear infinite;
+            pointer-events: none;
         }
-        .nav-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.08); }
-
-        .currency-pill {
-            display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 99px;
-            font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+        @keyframes gridPan { 0% { transform: perspective(1000px) rotateX(60deg) translateY(0); } 100% { transform: perspective(1000px) rotateX(60deg) translateY(80px); } }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
         }
-        .currency-pill:hover { border-color: #0066FF; color: #0066FF; }
 
+        .text-gradient {
+            background: linear-gradient(135deg, #2563EB 0%, #06B6D4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* --- APP UTILITIES --- */
         .hidden-view { display: none !important; }
+        .input-field {
+            background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px;
+            color: #0F172A; font-size: 13px; padding: 10px 12px; width: 100%;
+            transition: all 0.2s; font-weight: 500;
+        }
+        .input-field:focus { border-color: #2563EB; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); outline: none; }
+        .input-label { font-size: 10px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 5px; display: block; }
+
+        th { font-size: 10px; text-transform: uppercase; color: #64748B; font-weight: 700; padding: 12px 16px; border-bottom: 1px solid #E2E8F0; background: #F1F5F9; position: sticky; top: 0; white-space: nowrap; z-index: 10; }
+        td { font-size: 12px; padding: 10px 16px; border-bottom: 1px solid #F1F5F9; font-family: 'JetBrains Mono', monospace; white-space: nowrap; color: #334155; }
+        
+        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
-        
-        .text-dim { color: #94A3B8; }
     </style>
 </head>
-<body class="h-screen flex flex-col overflow-hidden bg-bg">
+<body class="h-screen flex flex-col overflow-hidden">
 
-    <!-- LANDING -->
-    <div id="viewLanding" class="flex-grow flex flex-col items-center justify-center p-6 overflow-y-auto">
-        <div class="mb-12 text-center">
-            <div class="w-16 h-16 bg-white rounded-2xl shadow-xl border border-white flex items-center justify-center mx-auto mb-6 ring-1 ring-blue/10">
-                 <svg class="w-8 h-8 text-blue" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-            </div>
-            <h1 class="text-3xl font-bold text-text mb-2 tracking-tight">Cashflow Simulation</h1>
-            <p class="text-subtext text-sm font-medium">Select a valuation model to begin.</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl w-full">
-            <div onclick="switchView('conventional')" class="nav-card hover:border-blue/40 group">
-                <div class="flex items-center gap-4 mb-4">
-                    <div class="w-10 h-10 bg-blue/10 rounded-lg flex items-center justify-center text-blue"><i data-lucide="layers" class="w-5 h-5"></i></div>
-                    <h3 class="text-lg font-bold">Conventional Lease</h3>
-                </div>
-                <p class="text-sm text-subtext leading-relaxed">Core asset modeling. Base Rent, CAM layering, granular Rent-Free strategies, and CapEx amortization.</p>
-            </div>
-            <div onclick="switchView('managed')" class="nav-card hover:border-green/40 group">
-                <div class="flex items-center gap-4 mb-4">
-                    <div class="w-10 h-10 bg-green/10 rounded-lg flex items-center justify-center text-green"><i data-lucide="cpu" class="w-5 h-5"></i></div>
-                    <h3 class="text-lg font-bold">Managed Workspace</h3>
-                </div>
-                <p class="text-sm text-subtext leading-relaxed">Flexible inventory modeling. Per-Seat or Sq.Ft pricing structure with ancillary revenue streams.</p>
-            </div>
-        </div>
-        <div class="mt-16 text-[10px] text-subtext font-mono opacity-60">v2.0 // WOLFFF TECH </div>
-    </div>
-
-    <!-- APP VIEW -->
-    <div id="viewApp" class="hidden-view h-screen flex flex-col bg-bg">
+    <!-- ==================== 1. CORPORATE LANDING ==================== -->
+    <div id="viewLanding" class="flex-grow relative w-full h-full overflow-y-auto overflow-x-hidden bg-w-bg">
         
-        <!-- Header -->
-        <header class="flex-none bg-white/90 backdrop-blur-md border-b border-border h-16 z-50 shadow-sm">
-            <div class="max-w-[1920px] mx-auto px-6 h-full flex justify-between items-center">
-                <div class="flex items-center gap-4">
-                    <button onclick="goHome()" class="p-2 rounded-lg hover:bg-bg text-subtext hover:text-text transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
-                    <div>
-                        <h2 class="text-sm font-bold text-text" id="appTitle">Analysis</h2>
-                        <div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-green animate-pulse"></span><span class="text-[10px] text-subtext uppercase font-bold">Live</span></div>
+        <!-- Background FX -->
+        <div class="hero-bg"><div class="mesh-grid"></div></div>
+
+        <!-- Nav -->
+        <nav class="fixed top-0 left-0 w-full px-6 py-6 flex justify-between items-center z-50 bg-w-bg/80 backdrop-blur-md border-b border-w-border/50">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-gradient-to-br from-w-accent to-w-cyan rounded-lg shadow-lg shadow-blue-500/30 flex items-center justify-center text-white font-bold font-mono text-sm">W</div>
+                <span class="font-bold tracking-tight text-sm">WOLFFF<span class="text-w-sub opacity-50">TECH</span></span>
+            </div>
+            <div class="flex gap-6 text-xs font-medium text-w-sub">
+                <a href="#" class="hover:text-w-accent transition-colors">Solutions</a>
+                <a href="#" class="hover:text-w-accent transition-colors">Intelligence</a>
+                <button onclick="launchApp()" class="bg-w-text text-white px-4 py-2 rounded-full hover:bg-w-accent transition-colors shadow-lg">Launch Console</button>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="min-h-screen flex flex-col items-center justify-center pt-20 px-6 relative">
+            
+            <div class="max-w-4xl mx-auto text-center space-y-8 animate-fade-up" style="animation-delay: 0.1s;">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-w-border shadow-sm">
+                    <span class="relative flex h-2 w-2">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-w-green opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-w-green"></span>
+                    </span>
+                    <span class="text-[10px] font-bold text-w-sub uppercase tracking-widest">Capital Engine v39.0 Live</span>
+                </div>
+
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight text-w-text leading-[1.1]">
+                    Finance at the <br/>
+                    <span class="text-gradient">Speed of Thought.</span>
+                </h1>
+
+                <p class="text-lg text-w-sub max-w-2xl mx-auto leading-relaxed">
+                    The world's most advanced liquidity modeling platform. Simulate lease structures, optimize capital deployment, and forecast cashflows with absolute precision.
+                </p>
+
+                <div class="flex flex-col sm:flex-row justify-center gap-4 pt-4">
+                    <button onclick="launchApp()" class="group relative px-8 py-4 bg-w-accent text-white rounded-xl font-bold shadow-lg shadow-blue-500/20 overflow-hidden transition-all hover:shadow-blue-500/40 hover:-translate-y-1">
+                        <div class="absolute inset-0 bg-white/20 group-hover:translate-x-full transition-transform duration-500 skew-x-12 -translate-x-full"></div>
+                        <span class="relative flex items-center gap-2">Initialize Simulator <i data-lucide="arrow-right" class="w-4 h-4"></i></span>
+                    </button>
+                    <button class="px-8 py-4 bg-white text-w-text border border-w-border rounded-xl font-bold hover:bg-w-bg transition-colors shadow-sm">
+                        View Documentation
+                    </button>
+                </div>
+            </div>
+
+            <!-- Graphic/Mockup -->
+            <div class="mt-20 w-full max-w-5xl animate-fade-up" style="animation-delay: 0.4s;">
+                <div class="glass-card rounded-2xl p-2 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-w-accent via-w-cyan to-w-green"></div>
+                    <div class="bg-white/50 rounded-xl border border-w-border/50 p-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <!-- Feature 1 -->
+                        <div class="space-y-3">
+                            <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-w-accent"><i data-lucide="zap" class="w-5 h-5"></i></div>
+                            <h3 class="font-bold">Real-time Engine</h3>
+                            <p class="text-xs text-w-sub leading-relaxed">Instant recalculation of NPV and effective rates as you type. No latency.</p>
+                        </div>
+                        <!-- Feature 2 -->
+                        <div class="space-y-3">
+                            <div class="w-10 h-10 bg-cyan-50 rounded-lg flex items-center justify-center text-w-cyan"><i data-lucide="globe" class="w-5 h-5"></i></div>
+                            <h3 class="font-bold">Global Standards</h3>
+                            <p class="text-xs text-w-sub leading-relaxed">PMT-based amortization and multi-currency support (USD/INR) built-in.</p>
+                        </div>
+                        <!-- Feature 3 -->
+                        <div class="space-y-3">
+                            <div class="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center text-w-green"><i data-lucide="shield-check" class="w-5 h-5"></i></div>
+                            <h3 class="font-bold">Enterprise Grade</h3>
+                            <p class="text-xs text-w-sub leading-relaxed">Secure local-session storage. Your data never leaves your device.</p>
+                        </div>
                     </div>
                 </div>
+            </div>
+
+            <div class="pb-20"></div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="py-10 border-t border-w-border bg-white text-center relative z-10">
+            <div class="flex flex-col items-center gap-4">
+                <div class="w-6 h-6 bg-w-text text-white rounded flex items-center justify-center font-mono text-xs font-bold">W</div>
+                <p class="text-[10px] text-w-sub font-mono uppercase tracking-widest">&copy; 2025 Wolfff Technologies Inc.</p>
+            </div>
+        </footer>
+    </div>
+
+
+    <!-- ==================== 2. APP VIEW (SIMULATOR) ==================== -->
+    <div id="viewApp" class="hidden-view h-screen flex flex-col bg-w-bg">
+        
+        <!-- App Header -->
+        <header class="flex-none bg-white/80 backdrop-blur-md border-b border-w-border h-16 z-50">
+            <div class="max-w-[1920px] mx-auto px-6 h-full flex justify-between items-center">
                 <div class="flex items-center gap-4">
-                    <div class="text-[10px] font-mono text-subtext hidden md:block" id="rateDisplay">Rate: ...</div>
-                    <button onclick="toggleCurrency()" id="btnCurrency" class="currency-pill"><span id="currSym">₹</span> <span id="currTxt">INR</span></button>
-                    <button onclick="resetInputs()" class="p-2 text-red hover:bg-red/10 rounded-lg transition-colors" title="Reset"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                    <button onclick="downloadExcel()" class="p-2 text-blue hover:bg-blue/10 rounded-lg transition-colors" title="Download"><i data-lucide="download" class="w-4 h-4"></i></button>
+                    <button onclick="goHome()" class="p-2 rounded-lg hover:bg-w-bg text-w-sub hover:text-w-text transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                    <div class="h-8 w-px bg-w-border"></div>
+                    <div class="flex gap-1 bg-w-bg p-1 rounded-lg">
+                        <button onclick="switchMode('conventional')" id="tabConv" class="px-4 py-1.5 text-xs font-bold rounded-md bg-white shadow text-w-text transition-all">Conventional</button>
+                        <button onclick="switchMode('managed')" id="tabMgd" class="px-4 py-1.5 text-xs font-bold rounded-md text-w-sub hover:text-w-text transition-all">Managed</button>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="text-[10px] font-mono text-w-sub hidden md:block" id="rateDisplay">Rate: ...</div>
+                    <button onclick="toggleCurrency()" id="btnCurrency" class="flex items-center gap-2 px-3 py-1.5 bg-white border border-w-border rounded-full text-xs font-bold hover:border-w-accent hover:text-w-accent transition-colors shadow-sm">
+                        <span id="currSym">₹</span> <span id="currTxt">INR</span>
+                    </button>
+                    <button onclick="resetInputs()" class="p-2 text-w-sub hover:text-red-500 transition-colors" title="Reset"><i data-lucide="refresh-ccw" class="w-4 h-4"></i></button>
+                    <button onclick="downloadExcel()" class="p-2 text-w-sub hover:text-w-accent transition-colors" title="Download"><i data-lucide="download" class="w-4 h-4"></i></button>
                 </div>
             </div>
         </header>
 
-        <!-- Main Content -->
+        <!-- Content -->
         <div class="flex-grow overflow-hidden flex flex-col lg:flex-row h-full">
             
-            <!-- LEFT SIDEBAR (Inputs) -->
-            <div class="w-full lg:w-[380px] flex-none bg-white border-r border-border h-full overflow-y-auto p-6 flex flex-col gap-6 shadow-lg z-20 relative">
-                <div><label class="input-label">Project Name</label><input type="text" id="inpProject" class="input-field" placeholder="e.g. HQ Tower A"></div>
-                <div class="h-px bg-bg w-full"></div>
+            <!-- Sidebar Inputs -->
+            <div class="w-full lg:w-[360px] flex-none bg-white border-r border-w-border h-full overflow-y-auto p-6 flex flex-col gap-6 shadow-lg z-20">
+                <div>
+                    <label class="input-label">Project Identity</label>
+                    <input type="text" id="inpProject" class="input-field font-bold" placeholder="e.g. HQ Tower A">
+                </div>
+                <div class="h-px bg-w-bg w-full"></div>
+                
+                <!-- Dynamic Inputs -->
                 <div id="inputContainer" class="space-y-6"></div>
             </div>
 
-            <!-- RIGHT DASHBOARD (Outputs) -->
-            <div class="flex-grow bg-bg h-full overflow-y-auto p-6 lg:p-8">
-                <div class="max-w-7xl mx-auto space-y-6">
+            <!-- Output Dashboard -->
+            <div class="flex-grow bg-w-bg h-full overflow-y-auto p-6 lg:p-10">
+                <div class="max-w-6xl mx-auto space-y-8">
                     
                     <!-- KPIs -->
-                    <div id="kpiSection" class="grid grid-cols-2 lg:grid-cols-4 gap-4"></div>
+                    <div id="kpiSection" class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- KPI Cards Injected Here -->
+                    </div>
 
-                    <!-- Table -->
-                    <div class="bg-white rounded-xl shadow-card border border-border flex flex-col overflow-hidden h-[calc(100vh-280px)]">
-                        <div class="px-6 py-4 border-b border-border bg-gray-50 flex justify-between items-center flex-none">
-                            <div class="flex items-center gap-2"><i data-lucide="table" class="w-4 h-4 text-subtext"></i><h4 class="text-xs font-bold text-subtext uppercase">Annual Schedule</h4></div>
-                            <span id="tableTag" class="text-[10px] font-mono bg-blue/10 text-blue px-2 py-1 rounded font-bold border border-blue/20">PROJECTION</span>
+                    <!-- Data Table -->
+                    <div class="bg-white rounded-xl shadow-sm border border-w-border flex flex-col overflow-hidden h-[500px]">
+                        <div class="px-6 py-4 border-b border-w-border bg-gray-50/50 flex justify-between items-center flex-none">
+                            <div class="flex items-center gap-2"><i data-lucide="table" class="w-4 h-4 text-w-sub"></i><h4 class="text-xs font-bold text-w-sub uppercase">Cash Flow Schedule</h4></div>
+                            <span id="tableTag" class="text-[10px] font-mono bg-blue-50 text-w-accent px-2 py-1 rounded font-bold border border-blue-100">PROJECTION</span>
                         </div>
                         <div class="overflow-auto flex-grow">
                             <table class="w-full text-right relative">
-                                <thead id="tableHead" class="bg-white text-subtext border-b border-border sticky top-0 z-10 shadow-sm"></thead>
-                                <tbody id="tableBody" class="divide-y divide-border text-text font-medium"></tbody>
+                                <thead id="tableHead" class="bg-white text-w-sub border-b border-w-border sticky top-0 z-10 shadow-sm text-[10px] uppercase tracking-wide"></thead>
+                                <tbody id="tableBody" class="divide-y divide-w-border text-w-text font-mono text-xs"></tbody>
                             </table>
                         </div>
                     </div>
@@ -160,15 +255,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Footer -->
-        <footer class="bg-surface border-t border-border py-2 flex-none z-30">
-             <div class="max-w-[1920px] mx-auto px-6 flex justify-between items-center">
-                <div class="text-[8px] font-mono text-subtext tracking-widest">--. .-.. --- .-. .. --- ..- ...</div>
-                <div class="text-[10px] font-medium text-subtext uppercase">&copy; 2025 WolfffTech</div>
-            </div>
-        </footer>
-
     </div>
 
 <script>
@@ -177,130 +263,124 @@
     // --- CONFIG ---
     let currencyMode = 'INR';
     let USD_RATE = 86.50;
-    let currentMode = 'landing'; 
+    let currentMode = 'conventional'; 
     let mgdBasis = 'seat';
     let fitoutType = 'warm';
     let exportData = null;
 
-    // --- HTML TEMPLATES ---
+    // --- TEMPLATES ---
     const HTML_CONV = `
         <div class="space-y-4">
-            <div class="section-header"><i data-lucide="box" class="w-4 h-4 text-blue"></i> Structure</div>
+            <div><label class="input-label">Area (Sq.Ft)</label><input type="number" id="convArea" class="input-field" step="0.01" placeholder="0.00"></div>
+            <div><label class="input-label">Base Rent (PSF/Mo)</label><input type="number" id="convRent" class="input-field" step="0.01" placeholder="0.00"></div>
             <div class="grid grid-cols-2 gap-3">
-                <div class="col-span-2"><label class="input-label">Area (Sq.Ft)</label><input type="number" id="convArea" class="input-field" step="0.01" placeholder="Total Leasable Area"></div>
-                <div class="col-span-2"><label class="input-label">Base Rent (PSF/Mo)</label><input type="number" id="convRent" class="input-field" step="0.01" placeholder="Initial Rent"></div>
-                <div><label class="input-label">Tenure (Yrs)</label><input type="number" id="convTenure" class="input-field" step="0.1" placeholder="Duration"></div>
-                <div><label class="input-label">Esc %</label><input type="number" id="convEscPct" class="input-field" step="0.01" placeholder="Growth"></div>
+                <div><label class="input-label">Tenure (Yrs)</label><input type="number" id="convTenure" class="input-field" step="0.1" placeholder="0.0"></div>
+                <div><label class="input-label">Esc %</label><input type="number" id="convEscPct" class="input-field" step="0.01" placeholder="0.00"></div>
             </div>
-            <div><label class="input-label">Esc. Frequency</label><select id="convFreq" class="input-field bg-white"><option value="1">Annual</option><option value="2">Every 2 Years</option><option value="3" selected>Every 3 Years</option><option value="5">Every 5 Years</option><option value="99">No Escalation</option></select></div>
+            <div><label class="input-label">Esc. Frequency</label><select id="convFreq" class="input-field bg-w-bg"><option value="1">Annual</option><option value="2">Every 2 Years</option><option value="3" selected>Every 3 Years</option><option value="5">Every 5 Years</option><option value="99">No Escalation</option></select></div>
         </div>
-        
-        <div class="h-px bg-border"></div>
-
+        <div class="h-px bg-w-border"></div>
         <div class="space-y-4">
-            <div class="section-header"><i data-lucide="percent" class="w-4 h-4 text-blue"></i> Incentives</div>
             <div class="grid grid-cols-2 gap-3">
-                <div><label class="input-label">Rent Free (Mo)</label><input type="number" id="convRentFree" class="input-field" step="0.1" placeholder="Months"></div>
-                <div><label class="input-label">Strategy</label><select id="convRentFreeType" class="input-field bg-white"><option value="start">At Start</option><option value="yearly">Every Year</option><option value="end">At End</option><option value="escalation">On Escalation</option></select></div>
+                <div><label class="input-label">Rent Free (Mo)</label><input type="number" id="convRentFree" class="input-field" step="0.1" placeholder="0.0"></div>
+                <div><label class="input-label">Strategy</label><select id="convRentFreeType" class="input-field bg-w-bg"><option value="start">At Start</option><option value="yearly">Every Year</option><option value="end">At End</option><option value="escalation">On Escalation</option></select></div>
             </div>
         </div>
-
-        <div class="h-px bg-border"></div>
-
+        <div class="h-px bg-w-border"></div>
         <div class="space-y-4">
-            <div class="section-header"><i data-lucide="hammer" class="w-4 h-4 text-blue"></i> Fit-out</div>
-            <div><label class="input-label">Strategy</label><select id="convFitoutType" class="input-field" onchange="updateFitoutUI(this.value)"><option value="warm">Warm Shell</option><option value="builder">Builder Amortized</option><option value="3rd">3rd Party Finance</option><option value="self">Self Funded</option></select></div>
-            <div id="convFitoutPanel" class="hidden space-y-3 bg-bg p-3 rounded-lg border border-border">
-                <div><label class="input-label">Capex (PSF)</label><input type="number" id="convCapex" class="input-field bg-white" placeholder="Cost per Sq.Ft" step="0.01"></div>
-                <div><label class="input-label">Amortization Yield %</label><input type="number" id="convYield" class="input-field bg-white" step="0.01" placeholder="Interest Rate"></div>
-                <div class="pt-2 border-t border-border flex justify-between items-center"><span class="text-[9px] text-subtext uppercase">Monthly Recovery</span><span id="convImpact" class="text-xs font-mono font-bold text-blue">+ 0.00</span></div>
+            <div><label class="input-label">Fit-out Strategy</label><select id="convFitoutType" class="input-field" onchange="updateFitoutUI(this.value)"><option value="warm">Warm Shell</option><option value="builder">Builder Amortized</option><option value="3rd">3rd Party Finance</option><option value="self">Self Funded</option></select></div>
+            <div id="convFitoutPanel" class="hidden space-y-3 bg-w-bg p-3 rounded-lg border border-w-border">
+                <div><label class="input-label">Capex (PSF)</label><input type="number" id="convCapex" class="input-field bg-white" placeholder="0.00" step="0.01"></div>
+                <div><label class="input-label">Amortization Yield %</label><input type="number" id="convYield" class="input-field bg-white" step="0.01" placeholder="12.00"></div>
+                <div class="pt-2 border-t border-w-border flex justify-between items-center"><span class="text-[9px] text-w-sub uppercase">Monthly Recovery</span><span id="convImpact" class="text-xs font-mono font-bold text-w-accent">+ 0.00</span></div>
             </div>
         </div>
-
-        <div class="h-px bg-border"></div>
-
-        <div class="space-y-4">
-            <div class="section-header"><i data-lucide="activity" class="w-4 h-4 text-blue"></i> OpEx & NPV</div>
+        <div class="space-y-4 mt-4">
             <div class="grid grid-cols-2 gap-3">
-                <div><label class="input-label">CAM Rate</label><input type="number" id="convCam" class="input-field" step="0.01" placeholder="Opex PSF"></div>
-                <div><label class="input-label">CAM Esc %</label><input type="number" id="convCamEsc" class="input-field" step="0.01" placeholder="Growth"></div>
+                <div><label class="input-label">CAM Rate</label><input type="number" id="convCam" class="input-field" step="0.01" placeholder="0.00"></div>
+                <div><label class="input-label">CAM Esc %</label><input type="number" id="convCamEsc" class="input-field" step="0.01" placeholder="0.00"></div>
             </div>
             <div class="grid grid-cols-2 gap-3">
                 <div><label class="input-label">CAM Freq (Yrs)</label><input type="number" id="convCamFreq" class="input-field" placeholder="1" step="0.1"></div>
-                <div><label class="input-label">Disc Rate %</label><input type="number" id="convDiscount" class="input-field" step="0.01" placeholder="NPV Disc."></div>
+                <div><label class="input-label">Discount Rate %</label><input type="number" id="convDiscount" class="input-field" step="0.01" placeholder="10.00"></div>
             </div>
         </div>
     `;
 
     const HTML_MGD = `
+        <div class="flex bg-w-bg p-1 rounded-lg mb-4"><button onclick="setMgdMode('seat')" id="btnSeat" class="w-1/2 py-1.5 text-[10px] font-bold bg-white rounded shadow-sm border border-w-border/50 transition-all text-w-text">Per Seat</button><button onclick="setMgdMode('area')" id="btnArea" class="w-1/2 py-1.5 text-[10px] font-bold text-w-sub transition-all">Per Sq.Ft</button></div>
         <div class="space-y-4">
-            <div class="section-header"><i data-lucide="settings-2" class="w-4 h-4 text-green"></i> Pricing</div>
-            <div class="flex bg-bg p-1 rounded-lg mb-2"><button onclick="setMgdMode('seat')" id="btnSeat" class="w-1/2 py-1.5 text-[10px] font-bold bg-white rounded shadow-sm border border-border/50 transition-all text-text">Per Seat</button><button onclick="setMgdMode('area')" id="btnArea" class="w-1/2 py-1.5 text-[10px] font-bold text-subtext transition-all">Per Sq.Ft</button></div>
-            <div><label class="input-label" id="lblQty">Total Seats</label><input type="number" id="mgdQty" class="input-field" placeholder="Count" step="0.1"></div>
-            <div><label class="input-label" id="lblRate">Price Per Seat</label><input type="number" id="mgdRate" class="input-field" placeholder="Monthly Cost" step="0.01"></div>
+            <div><label class="input-label" id="lblQty">Total Seats</label><input type="number" id="mgdQty" class="input-field" placeholder="0.00" step="0.1"></div>
+            <div><label class="input-label" id="lblRate">Price Per Seat</label><input type="number" id="mgdRate" class="input-field" placeholder="0.00" step="0.01"></div>
             <div class="grid grid-cols-2 gap-3">
-                <div><label class="input-label">Tenure (Yrs)</label><input type="number" id="mgdTenure" class="input-field" placeholder="Duration" step="0.1"></div>
-                <div><label class="input-label">Escalation %</label><input type="number" id="mgdEsc" class="input-field" placeholder="Growth" step="0.01"></div>
+                <div><label class="input-label">Tenure (Yrs)</label><input type="number" id="mgdTenure" class="input-field" placeholder="0.0" step="0.1"></div>
+                <div><label class="input-label">Escalation %</label><input type="number" id="mgdEsc" class="input-field" placeholder="0.00" step="0.01"></div>
             </div>
         </div>
-        <div class="h-px bg-border my-4"></div>
-        <div class="p-3 bg-bg rounded-lg border border-border mb-4">
-            <div class="section-header mb-2 border-none p-0"><i data-lucide="car" class="w-4 h-4 text-green"></i> Ancillaries</div>
+        <div class="h-px bg-w-border my-4"></div>
+        <div class="p-3 bg-w-bg rounded-lg border border-w-border mb-4">
             <div class="grid grid-cols-2 gap-3">
-                <div><label class="input-label">Parking Slots</label><input type="number" id="mgdParkSlots" class="input-field bg-white" placeholder="Count" step="1"></div>
-                <div><label class="input-label">Price/Slot</label><input type="number" id="mgdParkPrice" class="input-field bg-white" placeholder="Cost" step="0.01"></div>
+                <div><label class="input-label">Parking Slots</label><input type="number" id="mgdParkSlots" class="input-field bg-white" placeholder="0" step="1"></div>
+                <div><label class="input-label">Price/Slot</label><input type="number" id="mgdParkPrice" class="input-field bg-white" placeholder="0.00" step="0.01"></div>
             </div>
         </div>
-        <div><label class="input-label">Discount Rate %</label><input type="number" id="mgdDiscount" class="input-field" placeholder="NPV Disc." step="0.01"></div>
+        <div><label class="input-label">Discount Rate %</label><input type="number" id="mgdDiscount" class="input-field" placeholder="10.00" step="0.01"></div>
     `;
 
-    const KPI_CONV = `
-        <div class="bg-white p-5 rounded-xl shadow-card border border-border"><p class="text-[10px] font-bold text-subtext uppercase mb-1">Total Liability</p><h3 id="c_kpiTotal" class="text-2xl font-bold text-blue tracking-tight">0</h3></div>
-        <div class="bg-white p-5 rounded-xl shadow-card border border-border"><p class="text-[10px] font-bold text-subtext uppercase mb-1">Net Eff. Rate</p><h3 id="c_kpiNER" class="text-2xl font-bold text-blue tracking-tight">0</h3><p class="text-[10px] text-subtext mt-1">Per Sq.Ft / Mo</p></div>
-        <div class="bg-white p-5 rounded-xl shadow-card border border-border"><p class="text-[10px] font-bold text-subtext uppercase mb-1">NPV</p><h3 id="c_kpiNPV" class="text-2xl font-bold text-text tracking-tight">0</h3></div>
-        <div class="bg-white p-5 rounded-xl shadow-card border border-border"><p class="text-[10px] font-bold text-subtext uppercase mb-1">Avg. Monthly</p><h3 id="c_kpiMonthly" class="text-2xl font-bold text-text tracking-tight">0</h3></div>
-    `;
-
-    const KPI_MGD = `
-        <div class="bg-white p-5 rounded-xl shadow-card border border-border"><p class="text-[10px] font-bold text-subtext uppercase mb-1">Total Liability</p><h3 id="m_kpiTotal" class="text-2xl font-bold text-green tracking-tight">0</h3></div>
-        <div class="bg-white p-5 rounded-xl shadow-card border border-border"><p class="text-[10px] font-bold text-subtext uppercase mb-1" id="m_lblAvg">Avg Cost / Seat</p><h3 id="m_kpiAvg" class="text-2xl font-bold text-green tracking-tight">0</h3></div>
-        <div class="bg-white p-5 rounded-xl shadow-card border border-border"><p class="text-[10px] font-bold text-subtext uppercase mb-1">NPV</p><h3 id="m_kpiNPV" class="text-2xl font-bold text-text tracking-tight">0</h3></div>
-        <div class="bg-white p-5 rounded-xl shadow-card border border-border"><p class="text-[10px] font-bold text-subtext uppercase mb-1">Avg. Monthly</p><h3 id="m_kpiMonthly" class="text-2xl font-bold text-text tracking-tight">0</h3></div>
-    `;
-
-    // --- NAV ---
-    function switchView(view) {
-        if(view === 'landing') {
-            document.getElementById('viewLanding').classList.remove('hidden-view');
-            document.getElementById('viewApp').classList.add('hidden-view');
-            currentMode = 'landing';
-        } else {
-            document.getElementById('viewLanding').classList.add('hidden-view');
-            document.getElementById('viewApp').classList.remove('hidden-view');
-            currentMode = view;
-            
-            document.getElementById('appTitle').innerText = view === 'conventional' ? 'Conventional Analysis' : 'Managed Analysis';
-            document.getElementById('inputContainer').innerHTML = view === 'conventional' ? HTML_CONV : HTML_MGD;
-            document.getElementById('kpiSection').innerHTML = view === 'conventional' ? KPI_CONV : KPI_MGD;
-            document.getElementById('tableTag').className = view === 'conventional' ? "text-[10px] font-mono bg-blue/10 text-blue px-3 py-1.5 rounded-full font-bold border border-blue/20" : "text-[10px] font-mono bg-green/10 text-green px-3 py-1.5 rounded-full font-bold border border-green/20";
-
-            lucide.createIcons();
-            
-            // Bind Events - Clean Slate, no defaults loaded
-            document.querySelectorAll('#inputContainer input, #inputContainer select, #inpProject').forEach(el => {
-                el.addEventListener('input', calculate);
-            });
-
-            if(view === 'conventional') updateFitoutUI('warm'); else setMgdMode('seat');
-            
-            calculate(); // Will result in 0s initially
-            fetchRate();
-        }
+    // --- LOGIC ---
+    function launchApp() {
+        document.getElementById('viewLanding').classList.add('hidden-view');
+        document.getElementById('viewApp').classList.remove('hidden-view');
+        // Init Default View
+        switchMode('conventional');
+        fetchRate();
     }
 
-    function goHome() { switchView('landing'); }
+    function goHome() {
+        document.getElementById('viewApp').classList.add('hidden-view');
+        document.getElementById('viewLanding').classList.remove('hidden-view');
+    }
 
-    // --- UI LOGIC ---
+    function switchMode(mode) {
+        currentMode = mode;
+        const container = document.getElementById('inputContainer');
+        const kpiContainer = document.getElementById('kpiSection');
+        const tableHead = document.getElementById('tableHead');
+        
+        // Toggle Tabs
+        document.getElementById('tabConv').className = mode === 'conventional' ? "px-4 py-1.5 text-xs font-bold rounded-md bg-white shadow text-w-text transition-all" : "px-4 py-1.5 text-xs font-bold rounded-md text-w-sub hover:text-w-text transition-all";
+        document.getElementById('tabMgd').className = mode === 'managed' ? "px-4 py-1.5 text-xs font-bold rounded-md bg-white shadow text-w-text transition-all" : "px-4 py-1.5 text-xs font-bold rounded-md text-w-sub hover:text-w-text transition-all";
+        document.getElementById('tableTag').className = mode === 'conventional' ? "text-[10px] font-mono bg-blue-50 text-w-accent px-2 py-1 rounded font-bold border border-blue-100" : "text-[10px] font-mono bg-green-50 text-w-green px-2 py-1 rounded font-bold border border-green-100";
+
+        if (mode === 'conventional') {
+            container.innerHTML = HTML_CONV;
+            kpiContainer.innerHTML = `
+                <div class="bg-white p-5 rounded-xl shadow-card border border-w-border"><p class="text-[10px] font-bold text-w-sub uppercase tracking-wider mb-1">Total Liability</p><h3 id="kpiTotal" class="text-2xl font-bold text-w-text tracking-tight">0</h3></div>
+                <div class="bg-white p-5 rounded-xl shadow-card border border-w-border"><p class="text-[10px] font-bold text-w-sub uppercase tracking-wider mb-1">Net Eff. Rate</p><h3 id="kpiNER" class="text-2xl font-bold text-w-accent tracking-tight">0</h3><p class="text-[10px] text-w-sub mt-1">Per Sq.Ft / Mo</p></div>
+                <div class="bg-white p-5 rounded-xl shadow-card border border-w-border"><p class="text-[10px] font-bold text-w-sub uppercase tracking-wider mb-1">NPV</p><h3 id="kpiNPV" class="text-2xl font-bold text-w-text tracking-tight">0</h3></div>
+                <div class="bg-white p-5 rounded-xl shadow-card border border-w-border"><p class="text-[10px] font-bold text-w-sub uppercase tracking-wider mb-1">Avg. Monthly</p><h3 id="kpiMonthly" class="text-2xl font-bold text-w-text tracking-tight">0</h3></div>
+            `;
+            tableHead.innerHTML = `<tr><th class="pl-4 text-left">Period</th><th>Base Rent</th><th>OpEx</th><th>Fit-out</th><th>Total PSF</th><th>Monthly Avg</th><th class="pr-4">Annual Total</th></tr>`;
+            updateFitoutUI('warm');
+        } else {
+            container.innerHTML = HTML_MGD;
+            kpiContainer.innerHTML = `
+                <div class="bg-white p-5 rounded-xl shadow-card border border-w-border"><p class="text-[10px] font-bold text-w-sub uppercase tracking-wider mb-1">Total Liability</p><h3 id="kpiTotal" class="text-2xl font-bold text-w-text tracking-tight">0</h3></div>
+                <div class="bg-white p-5 rounded-xl shadow-card border border-w-border"><p class="text-[10px] font-bold text-w-sub uppercase tracking-wider mb-1" id="m_lblAvg">Avg Cost / Seat</p><h3 id="kpiNER" class="text-2xl font-bold text-w-green tracking-tight">0</h3></div>
+                <div class="bg-white p-5 rounded-xl shadow-card border border-w-border"><p class="text-[10px] font-bold text-w-sub uppercase tracking-wider mb-1">NPV</p><h3 id="kpiNPV" class="text-2xl font-bold text-w-text tracking-tight">0</h3></div>
+                <div class="bg-white p-5 rounded-xl shadow-card border border-w-border"><p class="text-[10px] font-bold text-w-sub uppercase tracking-wider mb-1">Avg. Monthly</p><h3 id="kpiMonthly" class="text-2xl font-bold text-w-text tracking-tight">0</h3></div>
+            `;
+            tableHead.innerHTML = `<tr><th class="pl-4 text-left">Period</th><th>Seat Rate</th><th>Parking Total</th><th>Monthly Total</th><th class="pr-4">Annual Total</th></tr>`;
+            setMgdMode('seat');
+        }
+
+        // Re-bind Events
+        document.querySelectorAll('#inputContainer input, #inputContainer select, #inpProject').forEach(el => {
+            el.addEventListener('input', calculate);
+        });
+        calculate();
+    }
+
     function updateFitoutUI(val) {
         fitoutType = val;
         const panel = document.getElementById('convFitoutPanel');
@@ -319,14 +399,14 @@
         
         if(btnS && btnA) {
             if (b === 'seat') {
-                btnS.className = "w-1/2 py-1.5 text-[10px] font-bold bg-white rounded shadow-sm text-text transition-all";
-                btnA.className = "w-1/2 py-1.5 text-[10px] font-bold text-subtext transition-all";
+                btnS.className = "w-1/2 py-1.5 text-[10px] font-bold bg-white rounded shadow-sm text-w-text transition-all";
+                btnA.className = "w-1/2 py-1.5 text-[10px] font-bold text-w-sub transition-all";
                 if(lblQty) lblQty.innerText = "Total Seats";
                 if(lblRate) lblRate.innerText = "Price Per Seat";
                 if(document.getElementById('m_lblAvg')) document.getElementById('m_lblAvg').innerText = "Avg Cost / Seat";
             } else {
-                btnS.className = "w-1/2 py-1.5 text-[10px] font-bold text-subtext transition-all";
-                btnA.className = "w-1/2 py-1.5 text-[10px] font-bold bg-white rounded shadow-sm text-text transition-all";
+                btnS.className = "w-1/2 py-1.5 text-[10px] font-bold text-w-sub transition-all";
+                btnA.className = "w-1/2 py-1.5 text-[10px] font-bold bg-white rounded shadow-sm text-w-text transition-all";
                 if(lblQty) lblQty.innerText = "Total Area (Sq.Ft)";
                 if(lblRate) lblRate.innerText = "Price Per Sq.Ft";
                 if(document.getElementById('m_lblAvg')) document.getElementById('m_lblAvg').innerText = "Avg Cost / Sq.Ft";
@@ -340,22 +420,20 @@
         document.getElementById('currSym').innerText = currencyMode === 'USD' ? '$' : '₹';
         document.getElementById('currTxt').innerText = currencyMode === 'USD' ? 'USD' : 'INR';
         const btn = document.getElementById('btnCurrency');
-        if(currencyMode === 'USD') btn.classList.add('border-blue', 'text-blue');
-        else btn.classList.remove('border-blue', 'text-blue');
+        if(currencyMode === 'USD') btn.classList.add('border-w-accent', 'text-w-accent');
+        else btn.classList.remove('border-w-accent', 'text-w-accent');
         calculate();
     }
 
     function resetInputs() {
+        if(!confirm("Clear all data?")) return;
         document.querySelectorAll('input').forEach(i => i.value = '');
         document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
-        if(currentMode === 'conventional') {
-             updateFitoutUI('warm');
-             document.getElementById('convFreq').selectedIndex = 2; // Default 3 years
-        }
+        if(currentMode === 'conventional') updateFitoutUI('warm');
         calculate();
     }
 
-    // --- MATH ENGINE ---
+    // --- MATH ---
     function PMT(rate, nper, pv) {
         if (rate === 0) return -(pv / nper);
         let pvif = Math.pow(1 + rate, nper);
@@ -375,8 +453,6 @@
     }
 
     function calcConv() {
-        if(!document.getElementById('tableHead')) return;
-
         const get = (id) => parseFloat(document.getElementById(id)?.value) || 0;
         const area = get('convArea');
         const rent = get('convRent');
@@ -392,22 +468,18 @@
 
         let fitRent = 0;
         if(fitoutType !== 'warm' && area > 0 && tenure > 0) {
-            if(fitoutType === 'self') {
-                fitRent = capex / (tenure*12); 
-            } else {
+            if(fitoutType === 'self') fitRent = capex / (tenure*12); 
+            else {
                 const monthlyRate = (yieldRate / 100) / 12;
                 fitRent = PMT(monthlyRate, tenure * 12, -capex);
             }
         }
-
         const impactEl = document.getElementById('convImpact');
         if(impactEl) impactEl.innerText = `+ ${getCurrencySymbol()}${formatRate(fitRent)}`;
 
         let totalFlow = 0, runFlow = 0, monthlyFlows = [];
         let cRent = rent, cCam = cam;
-        let rows = '';
-        let csvRows = [];
-
+        let rows = '', csvRows = [];
         const maxYears = Math.ceil(tenure > 0 ? tenure : 1);
 
         for(let y=1; y<=maxYears; y++) {
@@ -427,46 +499,30 @@
 
                 if (rfDays > 0) {
                     let isFree = false;
-                    if ((rfType === 'start' && gm <= rfDays) || 
-                        (rfType === 'yearly' && m <= rfDays) || 
-                        (rfType === 'end' && gm > (tenure*12 - rfDays)) || 
-                        (rfType === 'escalation' && isEscalationYear && m <= rfDays)) isFree = true;
+                    if ((rfType === 'start' && gm <= rfDays) || (rfType === 'yearly' && m <= rfDays) || (rfType === 'end' && gm > (tenure*12 - rfDays)) || (rfType === 'escalation' && isEscalationYear && m <= rfDays)) isFree = true;
                     if(isFree) effRent = 0;
                 }
 
-                let appliedFitRent = fitoutType === 'warm' ? 0 : fitRent;
-                let mCost = (effRent + cCam + appliedFitRent) * area;
-                
-                yTotal += mCost;
-                runFlow += mCost;
-                monthlyFlows.push(mCost);
+                let appliedFit = fitoutType === 'warm' ? 0 : fitRent;
+                let mCost = (effRent + cCam + appliedFit) * area;
+                yTotal += mCost; runFlow += mCost; monthlyFlows.push(mCost);
             }
             
             const fitVal = fitoutType === 'warm' ? '-' : formatMoney(fitRent);
-            
-            rows += `<tr class="group transition-colors"><td class="pl-4 text-left font-medium text-text">Year ${y}</td><td class="text-subtext">${formatMoney(cRent)}</td><td class="text-subtext">${formatMoney(cCam)}</td><td class="text-blue">${fitVal}</td><td class="font-bold text-text">${formatMoney(cRent+cCam+(fitoutType==='warm'?0:fitRent))}</td><td class="text-subtext font-mono">${formatMoney(yTotal/12)}</td><td class="pr-4 font-bold text-text">${formatMoney(yTotal)}</td></tr>`;
-            
+            rows += `<tr class="group transition-colors"><td class="pl-4 text-left font-medium text-w-text">Year ${y}</td><td class="text-w-sub">${formatMoney(cRent)}</td><td class="text-w-sub">${formatMoney(cCam)}</td><td class="text-w-accent font-medium">${fitVal}</td><td class="font-bold text-w-text">${formatMoney(cRent+cCam+(fitoutType==='warm'?0:fitRent))}</td><td class="text-w-sub font-mono">${formatMoney(yTotal/12)}</td><td class="pr-4 font-bold text-w-text">${formatMoney(yTotal)}</td></tr>`;
             csvRows.push([y, cRent, cCam, fitRent, (cRent+cCam+(fitoutType==='warm'?0:fitRent)), yTotal/12, yTotal]);
         }
 
-        document.getElementById('tableHead').innerHTML = `<tr><th class="pl-4 text-left">Period</th><th>Base Rent</th><th>OpEx</th><th>Fit-out</th><th>Total PSF</th><th>Monthly Avg</th><th class="pr-4">Annual Total</th></tr>`;
         document.getElementById('tableBody').innerHTML = rows;
-
-        updateKPI('c_kpiTotal', formatMoney(runFlow, true));
-        updateKPI('c_kpiNER', formatMoney(runFlow / (tenure*12) / (area || 1)));
-        updateKPI('c_kpiNPV', formatMoney(NPV(discount, monthlyFlows), true));
-        updateKPI('c_kpiMonthly', formatMoney(runFlow / (tenure*12), true));
+        updateKPI('kpiTotal', formatMoney(runFlow, true));
+        updateKPI('kpiNER', formatMoney(runFlow / (tenure*12) / (area || 1)));
+        updateKPI('kpiNPV', formatMoney(NPV(discount, monthlyFlows), true));
+        updateKPI('kpiMonthly', formatMoney(runFlow / (tenure*12), true));
         
-        exportData = {
-            type: 'Conventional',
-            headers: ['Year', 'Base Rent', 'OpEx', 'Fitout', 'Total PSF', 'Monthly', 'Annual'],
-            rows: csvRows
-        };
+        exportData = { type: 'Conventional', headers: ['Year', 'Base Rent', 'OpEx', 'Fitout', 'Total PSF', 'Monthly', 'Annual'], rows: csvRows };
     }
 
     function calcMgd() {
-        if(!document.getElementById('tableHead')) return;
-        
         const get = (id) => parseFloat(document.getElementById(id)?.value) || 0;
         const qty = get('mgdQty');
         const rate = get('mgdRate');
@@ -478,9 +534,7 @@
 
         let totalFlow = 0, monthlyFlows = [], runFlow = 0;
         let cRate = rate;
-        let rows = '';
-        let csvRows = [];
-
+        let rows = '', csvRows = [];
         const maxYears = Math.ceil(tenure > 0 ? tenure : 1);
 
         for(let y=1; y<=maxYears; y++) {
@@ -491,30 +545,22 @@
 
             for(let m=1; m<=12; m++) {
                 if ((y-1) + m/12 > tenure) break;
-                yTotal += mTotal;
-                runFlow += mTotal;
-                monthlyFlows.push(mTotal);
+                yTotal += mTotal; runFlow += mTotal; monthlyFlows.push(mTotal);
             }
-            rows += `<tr class="group transition-colors"><td class="pl-4 text-left font-medium text-text">Year ${y}</td><td class="text-subtext">${formatMoney(cRate)}</td><td class="text-subtext">${formatMoney(pSlots*pPrice)}</td><td class="font-bold text-green">${formatMoney(mTotal)}</td><td class="font-bold text-text pr-4">${formatMoney(yTotal)}</td></tr>`;
+            rows += `<tr class="group transition-colors"><td class="pl-4 text-left font-medium text-w-text">Year ${y}</td><td class="text-w-sub">${formatMoney(cRate)}</td><td class="text-w-sub">${formatMoney(pSlots*pPrice)}</td><td class="font-bold text-w-green">${formatMoney(mTotal)}</td><td class="font-bold text-w-text pr-4">${formatMoney(yTotal)}</td></tr>`;
             csvRows.push([y, cRate, pSlots*pPrice, mTotal, yTotal]);
         }
 
-        document.getElementById('tableHead').innerHTML = `<tr><th class="pl-4 text-left">Period</th><th>Seat Rate</th><th>Parking Total</th><th>Monthly Total</th><th class="pr-4">Annual Total</th></tr>`;
         document.getElementById('tableBody').innerHTML = rows;
-
         const divisor = mgdBasis === 'seat' ? qty : qty; 
-        updateKPI('m_kpiTotal', formatMoney(runFlow, true));
-        updateKPI('m_kpiAvg', formatMoney(runFlow / (tenure*12) / (divisor||1)));
-        updateKPI('m_kpiNPV', formatMoney(NPV(discount, monthlyFlows), true));
-        updateKPI('m_kpiMonthly', formatMoney(runFlow / (tenure*12), true));
+        updateKPI('kpiTotal', formatMoney(runFlow, true));
+        updateKPI('kpiNER', formatMoney(runFlow / (tenure*12) / (divisor||1)));
+        updateKPI('kpiNPV', formatMoney(NPV(discount, monthlyFlows), true));
+        updateKPI('kpiMonthly', formatMoney(runFlow / (tenure*12), true));
         
-        exportData = {
-            type: 'Managed',
-            headers: ['Year', 'Seat Rate', 'Parking', 'Monthly', 'Annual'],
-            rows: csvRows
-        };
+        exportData = { type: 'Managed', headers: ['Year', 'Seat Rate', 'Parking', 'Monthly', 'Annual'], rows: csvRows };
     }
-    
+
     function updateKPI(id, val) {
         const el = document.getElementById(id);
         if(el) el.innerText = val;
@@ -527,7 +573,6 @@
         let v = currencyMode === 'USD' ? val / USD_RATE : val;
         if (currencyMode === 'USD') {
             if (large && v >= 1000000) return '$' + (v/1000000).toFixed(2) + ' Mn';
-            if (large && v >= 1000) return '$' + (v/1000).toFixed(2) + ' K';
             return fmtUSD.format(v);
         } else {
             if (large && v >= 10000000) return '₹' + (v/10000000).toFixed(2) + ' Cr';
@@ -535,38 +580,8 @@
             return fmtINR.format(v);
         }
     }
-
     function getCurrencySymbol() { return currencyMode === 'USD' ? '$' : '₹'; }
-
-    function formatRate(val) { 
-        let v = currencyMode === 'USD' ? val / USD_RATE : val;
-        if (currencyMode === 'USD') return fmtUSD.format(v);
-        return fmtINR.format(v); 
-    }
-
-    // --- EXPORT ENGINE ---
-
-    function downloadExcel() {
-        if(!exportData) { alert("No data to export."); return; }
-        
-        let csvContent = "data:text/csv;charset=utf-8,";
-        const proj = document.getElementById('inpProject').value || 'Untitled';
-        csvContent += `Project,${proj}\nType,${exportData.type}\nCurrency,${currencyMode}\nExchange Rate,${USD_RATE}\n\n`;
-        csvContent += exportData.headers.join(",") + "\n";
-        
-        exportData.rows.forEach(rowArray => {
-            let row = rowArray.join(",");
-            csvContent += row + "\n";
-        });
-
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `${proj}_Cashflow.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
+    function formatRate(val) { let v = currencyMode === 'USD' ? val / USD_RATE : val; return (currencyMode === 'USD' ? fmtUSD : fmtINR).format(v); }
 
     async function fetchRate() {
         try {
@@ -578,9 +593,19 @@
             }
         } catch(e) {}
     }
-
-    fetchRate();
+    
+    function downloadExcel() {
+        if(!exportData) { alert("No data to export."); return; }
+        let csvContent = "data:text/csv;charset=utf-8,";
+        const proj = document.getElementById('inpProject').value || 'Untitled';
+        csvContent += `Project,${proj}\nType,${exportData.type}\nCurrency,${currencyMode}\nExchange Rate,${USD_RATE}\n\n`;
+        csvContent += exportData.headers.join(",") + "\n";
+        exportData.rows.forEach(r => csvContent += r.join(",") + "\n");
+        const link = document.createElement("a");
+        link.setAttribute("href", encodeURI(csvContent));
+        link.setAttribute("download", `${proj}_Cashflow.csv`);
+        document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    }
 </script>
 </body>
 </html>
-
