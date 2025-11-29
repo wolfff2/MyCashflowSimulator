@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WOLFFF // CASHFLOW SIMULATION v25</title>
+    <title>WOLFFF // CASHFLOW v33</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -21,15 +21,16 @@
                         blue: '#0071E3',
                         green: '#34C759',
                         red: '#FF3B30',
-                        orange: '#FF9500'
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
                         mono: ['JetBrains Mono', 'monospace'],
                     },
                     boxShadow: {
-                        'soft': '0 4px 12px rgba(0, 0, 0, 0.03)',
-                        'card': '0 1px 2px rgba(0,0,0,0.04)'
+                        'card': '0 1px 3px rgba(0,0,0,0.04)'
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                     }
                 }
             }
@@ -50,17 +51,17 @@
         tr:last-child td { border-bottom: none; }
         tr:hover { background-color: #F9FAFB; }
 
-        .currency-pill {
-            display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: #FFFFFF; border: 1px solid #D1D1D6; border-radius: 20px;
-            font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;
-        }
-        .currency-pill:hover { border-color: #0071E3; color: #0071E3; }
-
         .nav-card {
             background: white; padding: 32px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.02);
             border: 1px solid transparent; transition: all 0.3s ease; cursor: pointer;
         }
         .nav-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.06); }
+
+        .currency-pill {
+            display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: #FFFFFF; border: 1px solid #D1D1D6; border-radius: 20px;
+            font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+        }
+        .currency-pill:hover { border-color: #0071E3; color: #0071E3; }
 
         .hidden-view { display: none !important; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -74,8 +75,14 @@
     <!-- LANDING PAGE -->
     <div id="viewLanding" class="flex-grow flex flex-col items-center justify-center p-6 overflow-y-auto">
         <div class="mb-12 text-center">
-            <div class="w-16 h-16 bg-white rounded-2xl shadow-xl border border-white flex items-center justify-center mx-auto mb-6">
-                 <svg class="w-8 h-8 text-blue" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            <!-- LOGO -->
+            <div class="relative w-20 h-20 mx-auto mb-6 group cursor-pointer">
+                <div class="absolute inset-0 bg-gradient-to-tr from-blue-500 to-teal-400 rounded-2xl blur-xl opacity-40 group-hover:opacity-60 transition duration-500 animate-pulse-slow"></div>
+                <div class="relative w-full h-full bg-white rounded-2xl flex items-center justify-center shadow-2xl border border-white/50">
+                    <svg class="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="#0071E3" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
             </div>
             <h1 class="text-3xl font-semibold text-text mb-2">Cashflow Simulation</h1>
             <p class="text-subtext text-sm">Select a valuation model.</p>
@@ -97,7 +104,6 @@
                 <p class="text-sm text-subtext">Per-Seat or Sq.Ft pricing with ancillary revenue modeling.</p>
             </div>
         </div>
-        <div class="mt-16 text-[10px] text-subtext font-mono opacity-60">v25.0 // Engine Fixed</div>
     </div>
 
     <!-- APP VIEW -->
@@ -117,7 +123,7 @@
                     <div class="text-[10px] font-mono text-subtext hidden md:block" id="rateDisplay">Rate: ...</div>
                     <button onclick="toggleCurrency()" id="btnCurrency" class="currency-pill"><span id="currSym">₹</span> <span id="currTxt">INR</span></button>
                     <button onclick="resetInputs()" class="p-2 text-red hover:bg-red/10 rounded-lg transition-colors" title="Reset"><i data-lucide="refresh-ccw" class="w-4 h-4"></i></button>
-                    <button onclick="alert('Exporting...')" class="p-2 text-blue hover:bg-blue/10 rounded-lg transition-colors" title="Download"><i data-lucide="download" class="w-4 h-4"></i></button>
+                    <button onclick="downloadExcel()" class="p-2 text-blue hover:bg-blue/10 rounded-lg transition-colors" title="Download"><i data-lucide="download" class="w-4 h-4"></i></button>
                 </div>
             </div>
         </header>
@@ -130,6 +136,9 @@
                 <div><label class="input-label">Project Name</label><input type="text" id="inpProject" class="input-field" placeholder="e.g. Tower A"></div>
                 <div class="h-px bg-bg w-full"></div>
                 <div id="inputContainer" class="space-y-6"></div>
+                <div class="mt-auto pt-4 border-t border-border">
+                    <button onclick="resetInputs()" class="w-full py-2 text-xs font-medium text-subtext hover:text-red hover:bg-red/10 rounded-lg transition-colors flex items-center justify-center gap-2"><i data-lucide="trash-2" class="w-3 h-3"></i> Clear All Fields</button>
+                </div>
             </div>
 
             <!-- RIGHT DASHBOARD (Outputs) -->
@@ -137,23 +146,14 @@
                 <div class="max-w-6xl mx-auto space-y-6">
                     
                     <!-- KPIs -->
-                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div class="bg-white p-5 rounded-xl shadow-card border border-border"><p class="text-[10px] font-bold text-subtext uppercase mb-1">Total Liability</p><h3 id="kpiTotal" class="text-2xl font-bold text-text tracking-tight">0</h3></div>
-                        
-                        <div class="bg-white p-5 rounded-xl shadow-card border border-border">
-                            <p class="text-[10px] font-bold text-subtext uppercase mb-1">Net Eff. <span id="lblNerUnit">Rate</span></p>
-                            <h3 id="kpiNER" class="text-2xl font-bold text-blue tracking-tight">0</h3>
-                            <p class="text-[10px] text-subtext mt-1" id="lblNerSub">Per Month</p>
-                        </div>
-                        
-                        <div class="bg-white p-5 rounded-xl shadow-card border border-border"><p class="text-[10px] font-bold text-subtext uppercase mb-1">NPV</p><h3 id="kpiNPV" class="text-2xl font-bold text-text tracking-tight">0</h3></div>
-                        <div class="bg-white p-5 rounded-xl shadow-card border border-border"><p class="text-[10px] font-bold text-subtext uppercase mb-1">Avg. Monthly</p><h3 id="kpiMonthly" class="text-2xl font-bold text-text tracking-tight">0</h3></div>
+                    <div id="kpiSection" class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- Injected via JS to control color classes -->
                     </div>
 
                     <!-- Table -->
-                    <div class="bg-white rounded-xl shadow-card border border-border flex flex-col overflow-hidden h-[calc(100vh-300px)]">
+                    <div class="bg-white rounded-xl shadow-card border border-border flex flex-col overflow-hidden h-[calc(100vh-280px)]">
                         <div class="px-6 py-4 border-b border-border bg-gray-50 flex justify-between items-center flex-none">
-                            <div class="flex items-center gap-2"><i data-lucide="table" class="w-4 h-4 text-subtext"></i><h4 class="text-xs font-bold text-subtext uppercase">Cash Flow Schedule</h4></div>
+                            <div class="flex items-center gap-2"><i data-lucide="table" class="w-4 h-4 text-subtext"></i><h4 class="text-xs font-bold text-subtext uppercase">Annual Schedule</h4></div>
                             <span id="tableTag" class="text-[10px] font-mono bg-blue/10 text-blue px-2 py-1 rounded font-bold">PROJECTION</span>
                         </div>
                         <div class="overflow-auto flex-grow">
@@ -167,11 +167,14 @@
                 </div>
             </div>
         </div>
-
+        
         <!-- Footer -->
         <footer class="bg-surface border-t border-border py-2 flex-none z-30">
              <div class="max-w-[1920px] mx-auto px-6 flex justify-between items-center">
-                <div class="text-[8px] font-mono text-subtext tracking-widest">--. .-.. --- .-. .. --- ..- ...</div>
+                <div class="group flex items-center gap-3 cursor-default opacity-60 hover:opacity-100 transition-opacity">
+                    <div class="w-1.5 h-1.5 bg-blue rounded-full animate-pulse"></div>
+                    <div class="text-[8px] font-mono text-subtext tracking-[0.3em] hover:text-blue transition-colors">--. .-.. --- .-. .. --- ..- ...</div>
+                </div>
                 <div class="text-[10px] font-medium text-subtext uppercase">&copy; 2025 WolfffTech</div>
             </div>
         </footer>
@@ -187,26 +190,18 @@
     let currentMode = 'landing'; 
     let mgdBasis = 'seat';
     let fitoutType = 'warm';
-    
-    const getStoreKey = () => currentMode === 'conventional' ? 'wolfff_v25_conv' : 'wolfff_v25_mgd';
-
-    // --- DEFAULTS ---
-    const DEFAULTS = {
-        convArea: 10000, convRent: 85, convTenure: 5, convRentFree: 3, convRentFreeType: 'start', convEscPct: 5, convFreq: 3, 
-        convCam: 10, convCamEsc: 5, convCamFreq: 1, convCapex: 3000, convFitoutType: 'warm', convYield: 12, convDiscount: 10,
-        mgdQty: 100, mgdRate: 15000, mgdTenure: 3, mgdEsc: 5, mgdFreq: 3, mgdParkSlots: 5, mgdParkPrice: 5000, mgdDiscount: 10
-    };
+    let exportData = null;
 
     // --- HTML TEMPLATES ---
     const HTML_CONV = `
         <div class="space-y-4">
-            <div><label class="input-label">Area (Sq.Ft)</label><input type="number" id="convArea" class="input-field" step="0.01" placeholder="0"></div>
-            <div><label class="input-label">Base Rent (PSF/Mo)</label><input type="number" id="convRent" class="input-field" step="0.01" placeholder="0"></div>
+            <div><label class="input-label">Area (Sq.Ft)</label><input type="number" id="convArea" class="input-field" step="0.01" placeholder="e.g. 10000"></div>
+            <div><label class="input-label">Base Rent (PSF/Mo)</label><input type="number" id="convRent" class="input-field" step="0.01" placeholder="e.g. 85"></div>
             <div class="grid grid-cols-2 gap-3">
-                <div><label class="input-label">Tenure (Yrs)</label><input type="number" id="convTenure" class="input-field" step="0.1" placeholder="0"></div>
-                <div><label class="input-label">Escalation %</label><input type="number" id="convEscPct" class="input-field" step="0.01" placeholder="0"></div>
+                <div><label class="input-label">Tenure (Yrs)</label><input type="number" id="convTenure" class="input-field" step="0.1" placeholder="e.g. 5"></div>
+                <div><label class="input-label">Rent Esc %</label><input type="number" id="convEscPct" class="input-field" step="0.01" placeholder="e.g. 5"></div>
             </div>
-            <div><label class="input-label">Escalation Frequency</label><select id="convFreq" class="input-field bg-white"><option value="1">Annual</option><option value="2">Every 2 Years</option><option value="3" selected>Every 3 Years</option><option value="5">Every 5 Years</option><option value="99">No Escalation</option></select></div>
+            <div><label class="input-label">Escalation Frequency</label><select id="convFreq" class="input-field bg-white"><option value="1">Annual</option><option value="2">Every 2 Years</option><option value="3" selected>Every 3 Years</option><option value="5">Every 5 Years</option></select></div>
         </div>
         <div class="h-px bg-border my-2"></div>
         <div class="space-y-4">
@@ -217,17 +212,22 @@
         </div>
         <div class="h-px bg-border my-2"></div>
         <div class="space-y-4">
-            <div><label class="input-label">Fit-out Strategy</label><select id="convFitoutType" class="input-field" onchange="updateFitoutUI(this.value)"><option value="warm">Warm Shell</option><option value="builder">Builder Amortized</option><option value="self">Self Funded</option></select></div>
+            <div><label class="input-label">Fit-out Strategy</label><select id="convFitoutType" class="input-field" onchange="updateFitoutUI(this.value)"><option value="warm">Warm Shell</option><option value="builder">Builder Amortized</option><option value="3rd">3rd Party Finance</option><option value="self">Self Funded</option></select></div>
             <div id="convFitoutPanel" class="hidden space-y-3 bg-bg p-3 rounded-lg border border-border">
                 <div><label class="input-label">Capex (PSF)</label><input type="number" id="convCapex" class="input-field bg-white" placeholder="0" step="0.01"></div>
-                <div><label class="input-label">Amortization Yield %</label><input type="number" id="convYield" class="input-field bg-white" step="0.01" placeholder="0"></div>
+                <div><label class="input-label">Amortization Yield %</label><input type="number" id="convYield" class="input-field bg-white" step="0.01" placeholder="12"></div>
                 <div class="pt-2 border-t border-border flex justify-between items-center"><span class="text-[9px] text-subtext uppercase">Monthly Recovery</span><span id="convImpact" class="text-xs font-mono font-bold text-blue">+ 0.00</span></div>
             </div>
         </div>
-        <div class="space-y-4 mt-4">
+        <div class="h-px bg-border my-2"></div>
+        <div class="space-y-4">
             <div class="grid grid-cols-2 gap-3">
                 <div><label class="input-label">CAM Rate</label><input type="number" id="convCam" class="input-field" step="0.01" placeholder="0"></div>
-                <div><label class="input-label">Discount Rate %</label><input type="number" id="convDiscount" class="input-field" step="0.01" placeholder="10"></div>
+                <div><label class="input-label">CAM Esc %</label><input type="number" id="convCamEsc" class="input-field" step="0.01" placeholder="0"></div>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div><label class="input-label">CAM Freq (Yrs)</label><input type="number" id="convCamFreq" class="input-field" placeholder="1" step="0.1"></div>
+                <div><label class="input-label">Disc Rate %</label><input type="number" id="convDiscount" class="input-field" step="0.01" placeholder="10"></div>
             </div>
         </div>
     `;
@@ -268,6 +268,16 @@
             
             document.getElementById('appTitle').innerText = view === 'conventional' ? 'Conventional Analysis' : 'Managed Analysis';
             document.getElementById('inputContainer').innerHTML = view === 'conventional' ? HTML_CONV : HTML_MGD;
+            
+            // Generate KPIs with correct theme color
+            const themeColor = view === 'conventional' ? 'blue' : 'green';
+            document.getElementById('kpiSection').innerHTML = `
+                <div class="bg-white p-5 rounded-xl shadow-card border border-border"><p class="text-[10px] font-bold text-subtext uppercase mb-1">Total Liability</p><h3 id="kpiTotal" class="text-2xl font-bold text-text tracking-tight">0</h3></div>
+                <div class="bg-white p-5 rounded-xl shadow-card border border-border"><p class="text-[10px] font-bold text-subtext uppercase mb-1">Net Eff. Rate</p><h3 id="kpiNER" class="text-2xl font-bold text-${themeColor} tracking-tight">0</h3><p class="text-[10px] text-subtext mt-1" id="lblNerSub">Per Month</p></div>
+                <div class="bg-white p-5 rounded-xl shadow-card border border-border"><p class="text-[10px] font-bold text-subtext uppercase mb-1">NPV (Discounted)</p><h3 id="kpiNPV" class="text-2xl font-bold text-text tracking-tight">0</h3></div>
+                <div class="bg-white p-5 rounded-xl shadow-card border border-border"><p class="text-[10px] font-bold text-subtext uppercase mb-1">Avg. Monthly</p><h3 id="kpiMonthly" class="text-2xl font-bold text-text tracking-tight">0</h3></div>
+            `;
+
             lucide.createIcons();
             
             // Bind Events
@@ -275,102 +285,49 @@
                 el.addEventListener('input', calculate);
             });
 
-            // FORCE LOAD DEFAULTS IF EMPTY
-            const stored = localStorage.getItem(getStoreKey());
-            if (!stored) {
-                const inputs = document.querySelectorAll('#inputContainer input, #inputContainer select');
-                inputs.forEach(el => {
-                    if (DEFAULTS[el.id] !== undefined) el.value = DEFAULTS[el.id];
-                });
-            } else {
-                loadState();
-            }
-
-            // Init State
-            if(view === 'conventional') {
-                updateFitoutUI(document.getElementById('convFitoutType').value, false);
-            } else {
-                setMgdMode(mgdBasis, false);
-            }
+            if(view === 'conventional') updateFitoutUI('warm'); else setMgdMode('seat');
             
-            calculate();
+            calculate(); 
             fetchRate();
         }
     }
 
     function goHome() { switchView('landing'); }
 
-    // --- STATE MANAGEMENT ---
-    function loadState() {
-        const data = JSON.parse(localStorage.getItem(getStoreKey()) || '{}');
-        for (const [key, val] of Object.entries(data)) {
-            const el = document.getElementById(key);
-            if(el) el.value = val;
-        }
-        if(currentMode === 'conventional' && data.convFitoutType) fitoutType = data.convFitoutType;
-        if(currentMode === 'managed' && data.mgdBasis) mgdBasis = data.mgdBasis;
-    }
-
-    function saveState() {
-        if(currentMode === 'landing') return;
-        const container = document.getElementById('inputContainer');
-        const projectInput = document.getElementById('inpProject');
-        const inputs = container.querySelectorAll('input, select');
-        const data = {};
-        inputs.forEach(el => data[el.id] = el.value);
-        if(projectInput) data['inpProject'] = projectInput.value;
-        if(currentMode === 'managed') data.mgdBasis = mgdBasis;
-        localStorage.setItem(getStoreKey(), JSON.stringify(data));
-    }
-
-    function resetInputs() {
-        if(!confirm("Reset all fields?")) return;
-        localStorage.removeItem(getStoreKey());
-        
-        const container = document.getElementById('inputContainer');
-        container.querySelectorAll('input').forEach(el => el.value = '');
-        container.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
-        document.getElementById('inpProject').value = '';
-        
-        if(currentMode === 'conventional') updateFitoutUI('warm');
-        else setMgdMode('seat');
-        
-        calculate();
-    }
-
     // --- UI LOGIC ---
-    function updateFitoutUI(val, save=true) {
+    function updateFitoutUI(val) {
         fitoutType = val;
         const panel = document.getElementById('convFitoutPanel');
         if(panel) {
             if(val === 'warm') panel.classList.add('hidden');
             else panel.classList.remove('hidden');
         }
-        if(save) saveState();
         calculate();
     }
 
-    function setMgdMode(b, save=true) {
+    function setMgdMode(b) {
         mgdBasis = b;
         const btnS = document.getElementById('btnSeat');
         const btnA = document.getElementById('btnArea');
         const lblQty = document.getElementById('lblQty');
         const lblRate = document.getElementById('lblRate');
+        const lblNerSub = document.getElementById('lblNerSub');
         
         if(btnS && btnA) {
             if (b === 'seat') {
                 btnS.className = "w-1/2 py-1.5 text-xs font-semibold bg-white rounded shadow-sm text-text transition-all";
                 btnA.className = "w-1/2 py-1.5 text-xs font-semibold text-subtext transition-all";
-                lblQty.innerText = "Total Seats";
-                lblRate.innerText = "Price Per Seat";
+                if(lblQty) lblQty.innerText = "Total Seats";
+                if(lblRate) lblRate.innerText = "Price Per Seat";
+                if(lblNerSub) lblNerSub.innerText = "Per Seat / Month";
             } else {
                 btnS.className = "w-1/2 py-1.5 text-xs font-semibold text-subtext transition-all";
                 btnA.className = "w-1/2 py-1.5 text-xs font-semibold bg-white rounded shadow-sm text-text transition-all";
-                lblQty.innerText = "Total Area (Sq.Ft)";
-                lblRate.innerText = "Price Per Sq.Ft";
+                if(lblQty) lblQty.innerText = "Total Area (Sq.Ft)";
+                if(lblRate) lblRate.innerText = "Price Per Sq.Ft";
+                if(lblNerSub) lblNerSub.innerText = "Per Sq.Ft / Month";
             }
         }
-        if(save) saveState();
         calculate();
     }
 
@@ -381,6 +338,13 @@
         const btn = document.getElementById('btnCurrency');
         if(currencyMode === 'USD') btn.classList.add('border-blue', 'text-blue');
         else btn.classList.remove('border-blue', 'text-blue');
+        calculate();
+    }
+
+    function resetInputs() {
+        document.querySelectorAll('input').forEach(i => i.value = '');
+        document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+        if(currentMode === 'conventional') updateFitoutUI('warm');
         calculate();
     }
 
@@ -400,35 +364,30 @@
     }
 
     function calculate() {
-        if(currentMode === 'landing') return;
-        saveState(); // Auto save on calc
         if(currentMode === 'conventional') calcConv(); else if (currentMode === 'managed') calcMgd();
     }
 
     function calcConv() {
-        // Ensure we are in the right view
         if(!document.getElementById('tableHead')) return;
 
         const get = (id) => parseFloat(document.getElementById(id)?.value) || 0;
         const area = get('convArea');
         const rent = get('convRent');
         const tenure = get('convTenure');
-        
         const rfDays = get('convRentFree'); 
         const rfType = document.getElementById('convRentFreeType')?.value || 'start';
-        
         const esc = get('convEscPct');
         const freq = parseInt(document.getElementById('convFreq')?.value) || 3;
-        
         const cam = get('convCam');
-        const capex = get('convCapex');
-        const yieldRate = get('convYield');
-        const discount = get('convDiscount');
+        const camEsc = get('convCamEsc');
+        const camFreq = get('convCamFreq') || 1;
+        const capex = get('convCapex'), yieldRate = get('convYield'), discount = get('convDiscount');
 
         let fitRent = 0;
         if(fitoutType !== 'warm' && area > 0 && tenure > 0) {
-            if(fitoutType === 'self') fitRent = capex / (tenure*12); 
-            else {
+            if(fitoutType === 'self') {
+                fitRent = capex / (tenure*12); 
+            } else {
                 const monthlyRate = (yieldRate / 100) / 12;
                 fitRent = PMT(monthlyRate, tenure * 12, -capex);
             }
@@ -440,14 +399,15 @@
         let totalFlow = 0, runFlow = 0, monthlyFlows = [];
         let cRent = rent, cCam = cam;
         let rows = '';
+        let csvRows = [];
 
-        // Tenure check
-        const maxYears = Math.ceil(tenure > 0 ? tenure : 1); 
+        const maxYears = Math.ceil(tenure > 0 ? tenure : 1);
 
         for(let y=1; y<=maxYears; y++) {
             if(y > 1) {
                 if((y-1)%freq === 0) cRent *= (1 + esc/100);
-                cCam *= (1 + 5/100); // Default 5% annual cam escalation
+                // Add CAM Escalation Logic here if input restored
+                if(camEsc > 0 && (y-1)%camFreq === 0) cCam *= (1 + camEsc/100);
             }
             
             let yTotal = 0;
@@ -455,17 +415,16 @@
 
             for(let m=1; m<=12; m++) {
                 if ((y-1) + m/12 > tenure) break;
-
-                let globalMonth = (y-1)*12 + m;
+                
+                let gm = (y-1)*12 + m;
                 let effRent = cRent;
 
                 if (rfDays > 0) {
                     let isFree = false;
-                    if (rfType === 'start' && globalMonth <= rfDays) isFree = true;
-                    else if (rfType === 'yearly' && m <= rfDays) isFree = true;
-                    else if (rfType === 'end' && globalMonth > (tenure*12 - rfDays)) isFree = true;
-                    else if (rfType === 'escalation' && isEscalationYear && m <= rfDays) isFree = true;
-                    
+                    if ((rfType === 'start' && gm <= rfDays) || 
+                        (rfType === 'yearly' && m <= rfDays) || 
+                        (rfType === 'end' && gm > (tenure*12 - rfDays)) || 
+                        (rfType === 'escalation' && isEscalationYear && m <= rfDays)) isFree = true;
                     if(isFree) effRent = 0;
                 }
 
@@ -477,20 +436,26 @@
                 monthlyFlows.push(mCost);
             }
             
-            const fitClass = fitoutType === 'warm' ? 'text-dim' : 'text-blue';
             const fitVal = fitoutType === 'warm' ? '-' : formatMoney(fitRent);
             
-            rows += `<tr class="group transition-colors"><td class="font-medium text-text text-left pl-4">Year ${y}</td><td class="text-subtext">${formatMoney(cRent)}</td><td class="text-subtext">${formatMoney(cCam)}</td><td class="${fitClass}">${fitVal}</td><td class="font-bold text-text">${formatMoney(cRent+cCam+(fitoutType==='warm'?0:fitRent))}</td><td class="text-subtext font-mono">${formatMoney(yTotal/12)}</td><td class="font-bold text-text pr-4">${formatMoney(yTotal)}</td></tr>`;
+            rows += `<tr class="group transition-colors"><td class="pl-4 text-left font-medium text-text">Year ${y}</td><td class="text-subtext">${formatMoney(cRent)}</td><td class="text-subtext">${formatMoney(cCam)}</td><td class="text-blue">${fitVal}</td><td class="font-bold text-text">${formatMoney(cRent+cCam+(fitoutType==='warm'?0:fitRent))}</td><td class="text-subtext font-mono">${formatMoney(yTotal/12)}</td><td class="pr-4 font-bold text-text">${formatMoney(yTotal)}</td></tr>`;
+            
+            csvRows.push([y, cRent, cCam, fitRent, (cRent+cCam+(fitoutType==='warm'?0:fitRent)), yTotal/12, yTotal]);
         }
 
         document.getElementById('tableHead').innerHTML = `<tr><th class="pl-4 text-left">Period</th><th>Base Rent</th><th>OpEx</th><th>Fit-out</th><th>Total PSF</th><th>Monthly Avg</th><th class="pr-4">Annual Total</th></tr>`;
         document.getElementById('tableBody').innerHTML = rows;
 
-        // Update KPIs using correct unified IDs
         updateKPI('kpiTotal', formatMoney(runFlow, true));
         updateKPI('kpiNER', formatMoney(runFlow / (tenure*12) / (area || 1)));
         updateKPI('kpiNPV', formatMoney(NPV(discount, monthlyFlows), true));
         updateKPI('kpiMonthly', formatMoney(runFlow / (tenure*12), true));
+        
+        exportData = {
+            type: 'Conventional',
+            headers: ['Year', 'Base Rent', 'OpEx', 'Fitout', 'Total PSF', 'Monthly', 'Annual'],
+            rows: csvRows
+        };
     }
 
     function calcMgd() {
@@ -508,7 +473,8 @@
         let totalFlow = 0, monthlyFlows = [], runFlow = 0;
         let cRate = rate;
         let rows = '';
-        
+        let csvRows = [];
+
         const maxYears = Math.ceil(tenure > 0 ? tenure : 1);
 
         for(let y=1; y<=maxYears; y++) {
@@ -516,33 +482,32 @@
             let mSeat = qty * cRate;
             let mPark = pSlots * pPrice;
             let mTotal = mSeat + mPark;
-            let yTotal = mTotal * 12;
+            let yTotal = 0;
 
             for(let m=1; m<=12; m++) {
                 if ((y-1) + m/12 > tenure) break;
+                yTotal += mTotal;
                 runFlow += mTotal;
                 monthlyFlows.push(mTotal);
             }
-            totalFlow += yTotal; // Only works if full years, but runFlow handles partials
-
-            // Correct annual display for partial years
-            let actualAnnual = 0;
-             for(let m=1; m<=12; m++) {
-                if ((y-1) + m/12 <= tenure) actualAnnual += mTotal;
-            }
-
-            rows += `<tr class="group transition-colors"><td class="font-medium text-text text-left pl-4">Year ${y}</td><td class="text-subtext">${formatMoney(cRate)}</td><td class="text-subtext">${formatMoney(pPrice)}</td><td class="font-bold text-green">${formatMoney(mTotal)}</td><td class="font-bold text-text pr-4">${formatMoney(actualAnnual)}</td></tr>`;
+            rows += `<tr class="group transition-colors"><td class="pl-4 text-left font-medium text-text">Year ${y}</td><td class="text-subtext">${formatMoney(cRate)}</td><td class="text-subtext">${formatMoney(pSlots*pPrice)}</td><td class="font-bold text-green">${formatMoney(mTotal)}</td><td class="font-bold text-text pr-4">${formatMoney(yTotal)}</td></tr>`;
+            csvRows.push([y, cRate, pSlots*pPrice, mTotal, yTotal]);
         }
 
         document.getElementById('tableHead').innerHTML = `<tr><th class="pl-4 text-left">Period</th><th>Seat Rate</th><th>Parking Total</th><th>Monthly Total</th><th class="pr-4">Annual Total</th></tr>`;
         document.getElementById('tableBody').innerHTML = rows;
 
         const divisor = mgdBasis === 'seat' ? qty : qty; 
-        
         updateKPI('kpiTotal', formatMoney(runFlow, true));
         updateKPI('kpiNER', formatMoney(runFlow / (tenure*12) / (divisor||1)));
         updateKPI('kpiNPV', formatMoney(NPV(discount, monthlyFlows), true));
         updateKPI('kpiMonthly', formatMoney(runFlow / (tenure*12), true));
+        
+        exportData = {
+            type: 'Managed',
+            headers: ['Year', 'Seat Rate', 'Parking', 'Monthly', 'Annual'],
+            rows: csvRows
+        };
     }
     
     function updateKPI(id, val) {
@@ -550,13 +515,13 @@
         if(el) el.innerText = val;
     }
 
-    const fmtUSD = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
+    const fmtUSD = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const fmtINR = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 });
     
     function formatMoney(val, large=false) {
         let v = currencyMode === 'USD' ? val / USD_RATE : val;
         if (currencyMode === 'USD') {
-            if (large && v >= 1000000) return '$' + (v / 1000000).toFixed(2) + ' Mn';
+            if (large && v >= 1000000) return '$' + (v/1000000).toFixed(2) + ' Mn';
             if (large && v >= 1000) return '$' + (v / 1000).toFixed(2) + ' K';
             return fmtUSD.format(v);
         } else {
@@ -574,18 +539,47 @@
         return fmtINR.format(v); 
     }
 
+    // --- EXPORT ENGINE ---
+
+    function downloadExcel() {
+        if(!exportData) { alert("No data to export."); return; }
+        
+        let csvContent = "data:text/csv;charset=utf-8,";
+        
+        // Metadata
+        const proj = document.getElementById('inpProject').value || 'Untitled';
+        csvContent += `Project,${proj}\nType,${exportData.type}\nCurrency,${currencyMode}\nExchange Rate,${USD_RATE}\n\n`;
+        
+        // Headers
+        csvContent += exportData.headers.join(",") + "\n";
+        
+        // Rows
+        exportData.rows.forEach(rowArray => {
+            let row = rowArray.join(",");
+            csvContent += row + "\n";
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `${proj}_Cashflow.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
     async function fetchRate() {
         try {
             const res = await fetch('https://open.er-api.com/v6/latest/USD');
             const data = await res.json();
             if(data?.rates?.INR) {
                 USD_RATE = data.rates.INR;
-                document.getElementById('liveRateDisplay').innerText = `Rate: ₹${USD_RATE.toFixed(2)}`;
+                document.getElementById('rateDisplay').innerText = `Rate: ₹${USD_RATE.toFixed(2)}`;
             }
         } catch(e) {}
     }
-    
-    function downloadExcel() { alert("Exporting..."); }
+
+    fetchRate();
 </script>
 </body>
 </html>
