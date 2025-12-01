@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WOLFFF TECH // FINANCIAL INTELLIGENCE</title>
+    <title>WOLFFF TECH // FINANCIAL SUITE </title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -15,29 +15,31 @@
                 extend: {
                     colors: {
                         w: {
-                            bg: '#F8FAFC',       // Slate 50 (Paper White)
-                            surface: '#FFFFFF',  // Pure White
-                            text: '#0F172A',     // Slate 900 (Ink)
-                            sub: '#64748B',      // Slate 500 (Muted)
-                            border: '#E2E8F0',   // Slate 200
-                            accent: '#2563EB',   // Electric Blue
-                            cyan: '#06B6D4',     // Electric Cyan
-                            green: '#10B981',    // Success
+                            bg: '#F8FAFC',       
+                            surface: '#FFFFFF',  
+                            text: '#0F172A',     
+                            sub: '#475569',
+                            border: '#CBD5E1',
+                            accent: '#2563EB',   
+                            cyan: '#06B6D4',     
+                            green: '#10B981',
+                            red: '#EF4444',
                         }
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
                         mono: ['JetBrains Mono', 'monospace'],
                     },
+                    boxShadow: {
+                        'card': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+                        'float': '0 10px 30px -5px rgba(37, 99, 235, 0.15)'
+                    },
                     animation: {
-                        'float': 'float 8s ease-in-out infinite',
-                        'gradient': 'gradient 15s ease infinite',
-                        'fade-up': 'fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'fade-up': 'fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                     },
                     keyframes: {
-                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-20px)' } },
-                        gradient: { '0%, 100%': { backgroundPosition: '0% 50%' }, '50%': { backgroundPosition: '100% 50%' } },
-                        fadeUp: { '0%': { opacity: 0, transform: 'translateY(40px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } }
+                        fadeUp: { '0%': { opacity: 0, transform: 'translateY(20px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } }
                     }
                 }
             }
@@ -46,207 +48,160 @@
     <style>
         body { background-color: #F8FAFC; color: #0F172A; font-family: 'Inter', sans-serif; overflow-x: hidden; }
         
-        /* --- LANDING PAGE GRAPHICS --- */
-        .hero-bg {
-            position: absolute; inset: 0; overflow: hidden; z-index: -1;
-            background: radial-gradient(circle at 15% 50%, rgba(37, 99, 235, 0.03), transparent 40%),
-                        radial-gradient(circle at 85% 30%, rgba(6, 182, 212, 0.05), transparent 40%);
-        }
-        .mesh-grid {
-            position: absolute; width: 200%; height: 200%; top: -50%; left: -50%;
-            background-image: linear-gradient(rgba(15, 23, 42, 0.03) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
-            background-size: 80px 80px;
-            transform: perspective(1000px) rotateX(60deg) rotateY(0deg) rotateZ(-15deg);
-            animation: gridPan 40s linear infinite;
-            pointer-events: none;
-        }
-        @keyframes gridPan { 0% { transform: perspective(1000px) rotateX(60deg) translateY(0); } 100% { transform: perspective(1000px) rotateX(60deg) translateY(80px); } }
-        
-        .glass-card {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
-        }
-
-        .text-gradient {
-            background: linear-gradient(135deg, #2563EB 0%, #06B6D4 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* --- APP UTILITIES --- */
+        /* --- UI UTILITIES --- */
         .hidden-view { display: none !important; }
+        
+        /* Inputs */
+        .input-group { margin-bottom: 16px; }
+        .input-label { font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; display: block; }
         .input-field {
-            background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 8px;
+            background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 8px;
             color: #0F172A; font-size: 13px; padding: 10px 12px; width: 100%;
             transition: all 0.2s; font-weight: 500;
         }
         .input-field:focus { border-color: #2563EB; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); outline: none; }
-        .input-label { font-size: 10px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 5px; display: block; }
+        .input-field::placeholder { color: #94A3B8; opacity: 0.7; }
 
-        th { font-size: 10px; text-transform: uppercase; color: #64748B; font-weight: 700; padding: 12px 16px; border-bottom: 1px solid #E2E8F0; background: #F1F5F9; position: sticky; top: 0; white-space: nowrap; z-index: 10; }
+        /* Tables */
+        th { font-size: 10px; text-transform: uppercase; color: #475569; font-weight: 800; padding: 12px 16px; border-bottom: 1px solid #E2E8F0; background: #F1F5F9; position: sticky; top: 0; white-space: nowrap; z-index: 10; }
         td { font-size: 12px; padding: 10px 16px; border-bottom: 1px solid #F1F5F9; font-family: 'JetBrains Mono', monospace; white-space: nowrap; color: #334155; }
+        tr:hover { background-color: #F8FAFC; }
         
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+        
+        /* Graphics */
+        .mesh-grid {
+            position: absolute; width: 200%; height: 200%; top: -50%; left: -50%;
+            background-image: linear-gradient(rgba(15, 23, 42, 0.03) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            transform: perspective(1000px) rotateX(60deg);
+            pointer-events: none;
+        }
+
+        /* Range Slider */
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; margin: 8px 0; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; background: #E2E8F0; border-radius: 9999px; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: #FFFFFF; border: 1px solid #CBD5E1; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; margin-top: -6px; }
     </style>
 </head>
-<body class="h-screen flex flex-col overflow-hidden">
+<body class="h-screen flex flex-col">
 
-    <!-- ==================== 1. CORPORATE LANDING ==================== -->
+    <!-- ==================== 1. LANDING PAGE ==================== -->
     <div id="viewLanding" class="flex-grow relative w-full h-full overflow-y-auto overflow-x-hidden bg-w-bg">
-        
-        <!-- Background FX -->
-        <div class="hero-bg"><div class="mesh-grid"></div></div>
+        <div class="mesh-grid"></div>
 
         <!-- Nav -->
-        <nav class="fixed top-0 left-0 w-full px-6 py-6 flex justify-between items-center z-50 bg-w-bg/80 backdrop-blur-md border-b border-w-border/50">
+        <nav class="fixed top-0 w-full px-6 py-5 flex justify-between items-center z-50 bg-w-bg/90 backdrop-blur-md border-b border-w-border">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-gradient-to-br from-w-accent to-w-cyan rounded-lg shadow-lg shadow-blue-500/30 flex items-center justify-center text-white font-bold font-mono text-sm">W</div>
+                <div class="w-8 h-8 bg-w-text rounded-lg flex items-center justify-center text-white font-bold font-mono">W</div>
                 <span class="font-bold tracking-tight text-sm">WOLFFF<span class="text-w-sub opacity-50">TECH</span></span>
             </div>
-            <div class="flex gap-6 text-xs font-medium text-w-sub">
-                <a href="#" class="hover:text-w-accent transition-colors">Solutions</a>
-                <a href="#" class="hover:text-w-accent transition-colors">Intelligence</a>
-                <button onclick="launchApp()" class="bg-w-text text-white px-4 py-2 rounded-full hover:bg-w-accent transition-colors shadow-lg">Launch Console</button>
-            </div>
+            <button onclick="launchApp()" class="bg-w-accent text-white px-5 py-2 rounded-lg text-xs font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/20">
+                Launch Engine
+            </button>
         </nav>
 
-        <!-- Hero Section -->
+        <!-- Hero -->
         <section class="min-h-screen flex flex-col items-center justify-center pt-20 px-6 relative">
-            
-            <div class="max-w-4xl mx-auto text-center space-y-8 animate-fade-up" style="animation-delay: 0.1s;">
-                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-w-border shadow-sm">
-                    <span class="relative flex h-2 w-2">
-                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-w-green opacity-75"></span>
-                      <span class="relative inline-flex rounded-full h-2 w-2 bg-w-green"></span>
-                    </span>
-                    <span class="text-[10px] font-bold text-w-sub uppercase tracking-widest">Capital Engine v39.0 Live</span>
+            <div class="max-w-4xl mx-auto text-center space-y-8 animate-fade-up">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-w-border shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-w-green animate-pulse"></span>
+                    <span class="text-[10px] font-bold text-w-sub uppercase tracking-widest">System Online v41.0</span>
                 </div>
-
-                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight text-w-text leading-[1.1]">
-                    Finance at the <br/>
-                    <span class="text-gradient">Speed of Thought.</span>
+                <h1 class="text-5xl md:text-7xl font-extrabold text-w-text tracking-tight leading-tight">
+                    Financial Clarity.<br/><span class="text-w-accent">Instant Precision.</span>
                 </h1>
-
-                <p class="text-lg text-w-sub max-w-2xl mx-auto leading-relaxed">
-                    The world's most advanced liquidity modeling platform. Simulate lease structures, optimize capital deployment, and forecast cashflows with absolute precision.
+                <p class="text-lg text-w-sub max-w-2xl mx-auto font-medium">
+                    The ultimate liquidity modeling platform. Simulate complex lease structures and capital deployment scenarios in real-time.
                 </p>
-
-                <div class="flex flex-col sm:flex-row justify-center gap-4 pt-4">
-                    <button onclick="launchApp()" class="group relative px-8 py-4 bg-w-accent text-white rounded-xl font-bold shadow-lg shadow-blue-500/20 overflow-hidden transition-all hover:shadow-blue-500/40 hover:-translate-y-1">
-                        <div class="absolute inset-0 bg-white/20 group-hover:translate-x-full transition-transform duration-500 skew-x-12 -translate-x-full"></div>
-                        <span class="relative flex items-center gap-2">Initialize Simulator <i data-lucide="arrow-right" class="w-4 h-4"></i></span>
-                    </button>
-                    <button class="px-8 py-4 bg-white text-w-text border border-w-border rounded-xl font-bold hover:bg-w-bg transition-colors shadow-sm">
-                        View Documentation
+                <div class="flex justify-center pt-4">
+                    <button onclick="launchApp()" class="group relative px-8 py-4 bg-w-text text-white rounded-xl font-bold shadow-xl overflow-hidden transition-all hover:-translate-y-1">
+                        <span class="relative flex items-center gap-2">Enter Simulator <i data-lucide="arrow-right" class="w-4 h-4"></i></span>
                     </button>
                 </div>
             </div>
 
-            <!-- Graphic/Mockup -->
-            <div class="mt-20 w-full max-w-5xl animate-fade-up" style="animation-delay: 0.4s;">
-                <div class="glass-card rounded-2xl p-2 relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-w-accent via-w-cyan to-w-green"></div>
-                    <div class="bg-white/50 rounded-xl border border-w-border/50 p-8 grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <!-- Feature 1 -->
-                        <div class="space-y-3">
-                            <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-w-accent"><i data-lucide="zap" class="w-5 h-5"></i></div>
-                            <h3 class="font-bold">Real-time Engine</h3>
-                            <p class="text-xs text-w-sub leading-relaxed">Instant recalculation of NPV and effective rates as you type. No latency.</p>
-                        </div>
-                        <!-- Feature 2 -->
-                        <div class="space-y-3">
-                            <div class="w-10 h-10 bg-cyan-50 rounded-lg flex items-center justify-center text-w-cyan"><i data-lucide="globe" class="w-5 h-5"></i></div>
-                            <h3 class="font-bold">Global Standards</h3>
-                            <p class="text-xs text-w-sub leading-relaxed">PMT-based amortization and multi-currency support (USD/INR) built-in.</p>
-                        </div>
-                        <!-- Feature 3 -->
-                        <div class="space-y-3">
-                            <div class="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center text-w-green"><i data-lucide="shield-check" class="w-5 h-5"></i></div>
-                            <h3 class="font-bold">Enterprise Grade</h3>
-                            <p class="text-xs text-w-sub leading-relaxed">Secure local-session storage. Your data never leaves your device.</p>
-                        </div>
-                    </div>
+            <!-- Cards -->
+            <div class="mt-24 w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-6 pb-20">
+                <div onclick="launchApp('conventional')" class="bg-white p-8 rounded-2xl shadow-card border border-w-border hover:border-w-accent cursor-pointer transition-all group">
+                    <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-w-accent mb-6 group-hover:scale-110 transition-transform"><i data-lucide="layers" class="w-6 h-6"></i></div>
+                    <h3 class="text-xl font-bold mb-2">Conventional Lease</h3>
+                    <p class="text-sm text-w-sub">Deep modeling for long-term assets. CapEx amortization, CAM layering, and rent-free logic.</p>
+                </div>
+                <div onclick="launchApp('managed')" class="bg-white p-8 rounded-2xl shadow-card border border-w-border hover:border-w-green cursor-pointer transition-all group">
+                    <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center text-w-green mb-6 group-hover:scale-110 transition-transform"><i data-lucide="cpu" class="w-6 h-6"></i></div>
+                    <h3 class="text-xl font-bold mb-2">Managed Workspace</h3>
+                    <p class="text-sm text-w-sub">Flex inventory modeling. Per-Seat or Sq.Ft pricing with ancillary revenue streams.</p>
                 </div>
             </div>
-
-            <div class="pb-20"></div>
         </section>
-
-        <!-- Footer -->
-        <footer class="py-10 border-t border-w-border bg-white text-center relative z-10">
-            <div class="flex flex-col items-center gap-4">
-                <div class="w-6 h-6 bg-w-text text-white rounded flex items-center justify-center font-mono text-xs font-bold">W</div>
-                <p class="text-[10px] text-w-sub font-mono uppercase tracking-widest">&copy; 2025 Wolfff Technologies Inc.</p>
-            </div>
-        </footer>
     </div>
 
 
-    <!-- ==================== 2. APP VIEW (SIMULATOR) ==================== -->
+    <!-- ==================== 2. APP INTERFACE ==================== -->
     <div id="viewApp" class="hidden-view h-screen flex flex-col bg-w-bg">
         
-        <!-- App Header -->
-        <header class="flex-none bg-white/80 backdrop-blur-md border-b border-w-border h-16 z-50">
+        <!-- Header -->
+        <header class="flex-none bg-white/90 backdrop-blur-md border-b border-w-border h-16 z-50">
             <div class="max-w-[1920px] mx-auto px-6 h-full flex justify-between items-center">
                 <div class="flex items-center gap-4">
-                    <button onclick="goHome()" class="p-2 rounded-lg hover:bg-w-bg text-w-sub hover:text-w-text transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
-                    <div class="h-8 w-px bg-w-border"></div>
-                    <div class="flex gap-1 bg-w-bg p-1 rounded-lg">
-                        <button onclick="switchMode('conventional')" id="tabConv" class="px-4 py-1.5 text-xs font-bold rounded-md bg-white shadow text-w-text transition-all">Conventional</button>
+                    <button onclick="goHome()" class="p-2 rounded-lg hover:bg-w-bg text-w-sub transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                    <div class="h-6 w-px bg-w-border hidden md:block"></div>
+                    <div class="flex bg-w-bg p-1 rounded-lg">
+                        <button onclick="switchMode('conventional')" id="tabConv" class="px-4 py-1.5 text-xs font-bold rounded-md bg-white shadow-sm text-w-text transition-all">Conventional</button>
                         <button onclick="switchMode('managed')" id="tabMgd" class="px-4 py-1.5 text-xs font-bold rounded-md text-w-sub hover:text-w-text transition-all">Managed</button>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
-                    <div class="text-[10px] font-mono text-w-sub hidden md:block" id="rateDisplay">Rate: ...</div>
-                    <button onclick="toggleCurrency()" id="btnCurrency" class="flex items-center gap-2 px-3 py-1.5 bg-white border border-w-border rounded-full text-xs font-bold hover:border-w-accent hover:text-w-accent transition-colors shadow-sm">
+                    <div class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-w-bg rounded-lg border border-w-border">
+                        <div class="w-1.5 h-1.5 rounded-full bg-w-green animate-pulse"></div>
+                        <span id="rateDisplay" class="text-[10px] font-mono font-bold text-w-sub">Fetching Rate...</span>
+                    </div>
+                    <button onclick="toggleCurrency()" class="flex items-center gap-2 px-3 py-1.5 bg-white border border-w-border rounded-full text-xs font-bold hover:border-w-accent hover:text-w-accent transition-colors" id="btnCurrency">
                         <span id="currSym">₹</span> <span id="currTxt">INR</span>
                     </button>
-                    <button onclick="resetInputs()" class="p-2 text-w-sub hover:text-red-500 transition-colors" title="Reset"><i data-lucide="refresh-ccw" class="w-4 h-4"></i></button>
-                    <button onclick="downloadExcel()" class="p-2 text-w-sub hover:text-w-accent transition-colors" title="Download"><i data-lucide="download" class="w-4 h-4"></i></button>
+                    <button onclick="resetInputs()" class="p-2 text-w-sub hover:text-w-red transition-colors" title="Reset"><i data-lucide="refresh-ccw" class="w-4 h-4"></i></button>
+                    <button onclick="downloadExcel()" class="p-2 text-w-sub hover:text-w-accent transition-colors" title="Export"><i data-lucide="download" class="w-4 h-4"></i></button>
                 </div>
             </div>
         </header>
 
-        <!-- Content -->
-        <div class="flex-grow overflow-hidden flex flex-col lg:flex-row h-full">
+        <!-- Workspace -->
+        <div class="flex-grow flex flex-col lg:flex-row overflow-hidden">
             
-            <!-- Sidebar Inputs -->
-            <div class="w-full lg:w-[360px] flex-none bg-white border-r border-w-border h-full overflow-y-auto p-6 flex flex-col gap-6 shadow-lg z-20">
+            <!-- LEFT: INPUTS -->
+            <div class="w-full lg:w-[380px] flex-none bg-white border-r border-w-border h-full overflow-y-auto p-6 flex flex-col gap-6 shadow-lg z-20">
                 <div>
                     <label class="input-label">Project Identity</label>
                     <input type="text" id="inpProject" class="input-field font-bold" placeholder="e.g. HQ Tower A">
                 </div>
                 <div class="h-px bg-w-bg w-full"></div>
-                
-                <!-- Dynamic Inputs -->
+                <!-- DYNAMIC INPUT FORM -->
                 <div id="inputContainer" class="space-y-6"></div>
             </div>
 
-            <!-- Output Dashboard -->
+            <!-- RIGHT: OUTPUTS -->
             <div class="flex-grow bg-w-bg h-full overflow-y-auto p-6 lg:p-10">
-                <div class="max-w-6xl mx-auto space-y-8">
+                <div class="max-w-6xl mx-auto space-y-8 pb-20">
                     
                     <!-- KPIs -->
                     <div id="kpiSection" class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        <!-- KPI Cards Injected Here -->
+                        <!-- Injected via JS -->
                     </div>
 
-                    <!-- Data Table -->
-                    <div class="bg-white rounded-xl shadow-sm border border-w-border flex flex-col overflow-hidden h-[500px]">
+                    <!-- Table -->
+                    <div class="bg-white rounded-xl shadow-card border border-w-border flex flex-col overflow-hidden h-[600px]">
                         <div class="px-6 py-4 border-b border-w-border bg-gray-50/50 flex justify-between items-center flex-none">
                             <div class="flex items-center gap-2"><i data-lucide="table" class="w-4 h-4 text-w-sub"></i><h4 class="text-xs font-bold text-w-sub uppercase">Cash Flow Schedule</h4></div>
-                            <span id="tableTag" class="text-[10px] font-mono bg-blue-50 text-w-accent px-2 py-1 rounded font-bold border border-blue-100">PROJECTION</span>
+                            <span class="text-[10px] font-mono bg-blue-50 text-w-accent px-2 py-1 rounded font-bold border border-blue-100">PROJECTION</span>
                         </div>
                         <div class="overflow-auto flex-grow">
                             <table class="w-full text-right relative">
-                                <thead id="tableHead" class="bg-white text-w-sub border-b border-w-border sticky top-0 z-10 shadow-sm text-[10px] uppercase tracking-wide"></thead>
+                                <thead id="tableHead" class="bg-white text-w-sub border-b border-w-border sticky top-0 z-10 shadow-sm"></thead>
                                 <tbody id="tableBody" class="divide-y divide-w-border text-w-text font-mono text-xs"></tbody>
                             </table>
                         </div>
@@ -277,7 +232,7 @@
                 <div><label class="input-label">Tenure (Yrs)</label><input type="number" id="convTenure" class="input-field" step="0.1" placeholder="0.0"></div>
                 <div><label class="input-label">Esc %</label><input type="number" id="convEscPct" class="input-field" step="0.01" placeholder="0.00"></div>
             </div>
-            <div><label class="input-label">Esc. Frequency</label><select id="convFreq" class="input-field bg-w-bg"><option value="1">Annual</option><option value="2">Every 2 Years</option><option value="3" selected>Every 3 Years</option><option value="5">Every 5 Years</option><option value="99">No Escalation</option></select></div>
+            <div><label class="input-label">Esc. Frequency</label><select id="convFreq" class="input-field bg-w-bg"><option value="1">Annual</option><option value="2">Every 2 Years</option><option value="3" selected>Every 3 Years</option><option value="5">Every 5 Years</option></select></div>
         </div>
         <div class="h-px bg-w-border"></div>
         <div class="space-y-4">
@@ -327,12 +282,11 @@
         <div><label class="input-label">Discount Rate %</label><input type="number" id="mgdDiscount" class="input-field" placeholder="10.00" step="0.01"></div>
     `;
 
-    // --- LOGIC ---
-    function launchApp() {
+    // --- NAV ---
+    function launchApp(mode = 'conventional') {
         document.getElementById('viewLanding').classList.add('hidden-view');
         document.getElementById('viewApp').classList.remove('hidden-view');
-        // Init Default View
-        switchMode('conventional');
+        switchMode(mode);
         fetchRate();
     }
 
@@ -345,42 +299,41 @@
         currentMode = mode;
         const container = document.getElementById('inputContainer');
         const kpiContainer = document.getElementById('kpiSection');
-        const tableHead = document.getElementById('tableHead');
         
-        // Toggle Tabs
+        // Update Tabs
         document.getElementById('tabConv').className = mode === 'conventional' ? "px-4 py-1.5 text-xs font-bold rounded-md bg-white shadow text-w-text transition-all" : "px-4 py-1.5 text-xs font-bold rounded-md text-w-sub hover:text-w-text transition-all";
         document.getElementById('tabMgd').className = mode === 'managed' ? "px-4 py-1.5 text-xs font-bold rounded-md bg-white shadow text-w-text transition-all" : "px-4 py-1.5 text-xs font-bold rounded-md text-w-sub hover:text-w-text transition-all";
-        document.getElementById('tableTag').className = mode === 'conventional' ? "text-[10px] font-mono bg-blue-50 text-w-accent px-2 py-1 rounded font-bold border border-blue-100" : "text-[10px] font-mono bg-green-50 text-w-green px-2 py-1 rounded font-bold border border-green-100";
 
+        // Inject Content
         if (mode === 'conventional') {
             container.innerHTML = HTML_CONV;
             kpiContainer.innerHTML = `
-                <div class="bg-white p-5 rounded-xl shadow-card border border-w-border"><p class="text-[10px] font-bold text-w-sub uppercase tracking-wider mb-1">Total Liability</p><h3 id="kpiTotal" class="text-2xl font-bold text-w-text tracking-tight">0</h3></div>
-                <div class="bg-white p-5 rounded-xl shadow-card border border-w-border"><p class="text-[10px] font-bold text-w-sub uppercase tracking-wider mb-1">Net Eff. Rate</p><h3 id="kpiNER" class="text-2xl font-bold text-w-accent tracking-tight">0</h3><p class="text-[10px] text-w-sub mt-1">Per Sq.Ft / Mo</p></div>
-                <div class="bg-white p-5 rounded-xl shadow-card border border-w-border"><p class="text-[10px] font-bold text-w-sub uppercase tracking-wider mb-1">NPV</p><h3 id="kpiNPV" class="text-2xl font-bold text-w-text tracking-tight">0</h3></div>
-                <div class="bg-white p-5 rounded-xl shadow-card border border-w-border"><p class="text-[10px] font-bold text-w-sub uppercase tracking-wider mb-1">Avg. Monthly</p><h3 id="kpiMonthly" class="text-2xl font-bold text-w-text tracking-tight">0</h3></div>
+                <div class="bg-white p-5 rounded-xl shadow-card border border-w-border"><p class="text-[10px] font-bold text-w-sub uppercase tracking-wider mb-1">Total Liability</p><h3 id="out_Total" class="text-2xl font-bold text-w-text tracking-tight">0</h3></div>
+                <div class="bg-white p-5 rounded-xl shadow-card border border-w-border"><p class="text-[10px] font-bold text-w-sub uppercase tracking-wider mb-1">Net Eff. Rate</p><h3 id="out_NER" class="text-2xl font-bold text-w-accent tracking-tight">0</h3><p class="text-[10px] text-w-sub mt-1">Per Sq.Ft / Mo</p></div>
+                <div class="bg-white p-5 rounded-xl shadow-card border border-w-border"><p class="text-[10px] font-bold text-w-sub uppercase tracking-wider mb-1">NPV</p><h3 id="out_NPV" class="text-2xl font-bold text-w-text tracking-tight">0</h3></div>
+                <div class="bg-white p-5 rounded-xl shadow-card border border-w-border"><p class="text-[10px] font-bold text-w-sub uppercase tracking-wider mb-1">Avg. Monthly</p><h3 id="out_Monthly" class="text-2xl font-bold text-w-text tracking-tight">0</h3></div>
             `;
-            tableHead.innerHTML = `<tr><th class="pl-4 text-left">Period</th><th>Base Rent</th><th>OpEx</th><th>Fit-out</th><th>Total PSF</th><th>Monthly Avg</th><th class="pr-4">Annual Total</th></tr>`;
             updateFitoutUI('warm');
         } else {
             container.innerHTML = HTML_MGD;
             kpiContainer.innerHTML = `
-                <div class="bg-white p-5 rounded-xl shadow-card border border-w-border"><p class="text-[10px] font-bold text-w-sub uppercase tracking-wider mb-1">Total Liability</p><h3 id="kpiTotal" class="text-2xl font-bold text-w-text tracking-tight">0</h3></div>
-                <div class="bg-white p-5 rounded-xl shadow-card border border-w-border"><p class="text-[10px] font-bold text-w-sub uppercase tracking-wider mb-1" id="m_lblAvg">Avg Cost / Seat</p><h3 id="kpiNER" class="text-2xl font-bold text-w-green tracking-tight">0</h3></div>
-                <div class="bg-white p-5 rounded-xl shadow-card border border-w-border"><p class="text-[10px] font-bold text-w-sub uppercase tracking-wider mb-1">NPV</p><h3 id="kpiNPV" class="text-2xl font-bold text-w-text tracking-tight">0</h3></div>
-                <div class="bg-white p-5 rounded-xl shadow-card border border-w-border"><p class="text-[10px] font-bold text-w-sub uppercase tracking-wider mb-1">Avg. Monthly</p><h3 id="kpiMonthly" class="text-2xl font-bold text-w-text tracking-tight">0</h3></div>
+                <div class="bg-white p-5 rounded-xl shadow-card border border-w-border"><p class="text-[10px] font-bold text-w-sub uppercase tracking-wider mb-1">Total Liability</p><h3 id="out_Total" class="text-2xl font-bold text-w-text tracking-tight">0</h3></div>
+                <div class="bg-white p-5 rounded-xl shadow-card border border-w-border"><p class="text-[10px] font-bold text-w-sub uppercase tracking-wider mb-1" id="lbl_NER_Mgd">Avg Cost / Seat</p><h3 id="out_NER" class="text-2xl font-bold text-w-green tracking-tight">0</h3></div>
+                <div class="bg-white p-5 rounded-xl shadow-card border border-w-border"><p class="text-[10px] font-bold text-w-sub uppercase tracking-wider mb-1">NPV</p><h3 id="out_NPV" class="text-2xl font-bold text-w-text tracking-tight">0</h3></div>
+                <div class="bg-white p-5 rounded-xl shadow-card border border-w-border"><p class="text-[10px] font-bold text-w-sub uppercase tracking-wider mb-1">Avg. Monthly</p><h3 id="out_Monthly" class="text-2xl font-bold text-w-text tracking-tight">0</h3></div>
             `;
-            tableHead.innerHTML = `<tr><th class="pl-4 text-left">Period</th><th>Seat Rate</th><th>Parking Total</th><th>Monthly Total</th><th class="pr-4">Annual Total</th></tr>`;
             setMgdMode('seat');
         }
 
-        // Re-bind Events
+        // Bind Events
         document.querySelectorAll('#inputContainer input, #inputContainer select, #inpProject').forEach(el => {
             el.addEventListener('input', calculate);
         });
+        
         calculate();
     }
 
+    // --- UI HELPERS ---
     function updateFitoutUI(val) {
         fitoutType = val;
         const panel = document.getElementById('convFitoutPanel');
@@ -396,20 +349,21 @@
         const btnA = document.getElementById('btnArea');
         const lblQty = document.getElementById('lblQty');
         const lblRate = document.getElementById('lblRate');
-        
+        const lblAvg = document.getElementById('lbl_NER_Mgd');
+
         if(btnS && btnA) {
             if (b === 'seat') {
                 btnS.className = "w-1/2 py-1.5 text-[10px] font-bold bg-white rounded shadow-sm text-w-text transition-all";
                 btnA.className = "w-1/2 py-1.5 text-[10px] font-bold text-w-sub transition-all";
                 if(lblQty) lblQty.innerText = "Total Seats";
                 if(lblRate) lblRate.innerText = "Price Per Seat";
-                if(document.getElementById('m_lblAvg')) document.getElementById('m_lblAvg').innerText = "Avg Cost / Seat";
+                if(lblAvg) lblAvg.innerText = "Avg Cost / Seat";
             } else {
                 btnS.className = "w-1/2 py-1.5 text-[10px] font-bold text-w-sub transition-all";
                 btnA.className = "w-1/2 py-1.5 text-[10px] font-bold bg-white rounded shadow-sm text-w-text transition-all";
                 if(lblQty) lblQty.innerText = "Total Area (Sq.Ft)";
                 if(lblRate) lblRate.innerText = "Price Per Sq.Ft";
-                if(document.getElementById('m_lblAvg')) document.getElementById('m_lblAvg').innerText = "Avg Cost / Sq.Ft";
+                if(lblAvg) lblAvg.innerText = "Avg Cost / Sq.Ft";
             }
         }
         calculate();
@@ -417,8 +371,9 @@
 
     function toggleCurrency() {
         currencyMode = currencyMode === 'INR' ? 'USD' : 'INR';
-        document.getElementById('currSym').innerText = currencyMode === 'USD' ? '$' : '₹';
-        document.getElementById('currTxt').innerText = currencyMode === 'USD' ? 'USD' : 'INR';
+        const sym = currencyMode === 'USD' ? '$' : '₹';
+        const txt = currencyMode === 'USD' ? 'USD' : 'INR';
+        document.getElementById('currSym').innerText = sym; document.getElementById('currTxt').innerText = txt;
         const btn = document.getElementById('btnCurrency');
         if(currencyMode === 'USD') btn.classList.add('border-w-accent', 'text-w-accent');
         else btn.classList.remove('border-w-accent', 'text-w-accent');
@@ -426,9 +381,9 @@
     }
 
     function resetInputs() {
-        if(!confirm("Clear all data?")) return;
-        document.querySelectorAll('input').forEach(i => i.value = '');
-        document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+        if(!confirm("Reset fields?")) return;
+        document.querySelectorAll('#inputContainer input').forEach(i => i.value = '');
+        document.querySelectorAll('#inputContainer select').forEach(s => s.selectedIndex = 0);
         if(currentMode === 'conventional') updateFitoutUI('warm');
         calculate();
     }
@@ -440,11 +395,8 @@
         return rate / (pvif - 1) * -(pv * pvif);
     }
     function NPV(rate, flows) {
-        let r = rate/100/12;
-        let npv = 0;
-        for(let i=0; i<flows.length; i++) {
-            npv += flows[i] / Math.pow(1+r, i+1);
-        }
+        let r = rate/100/12, npv = 0;
+        for(let i=0; i<flows.length; i++) npv += flows[i] / Math.pow(1+r, i+1);
         return npv;
     }
 
@@ -477,15 +429,14 @@
         const impactEl = document.getElementById('convImpact');
         if(impactEl) impactEl.innerText = `+ ${getCurrencySymbol()}${formatRate(fitRent)}`;
 
-        let totalFlow = 0, runFlow = 0, monthlyFlows = [];
-        let cRent = rent, cCam = cam;
+        let runFlow = 0, monthlyFlows = [], cRent = rent, cCam = cam;
         let rows = '', csvRows = [];
         const maxYears = Math.ceil(tenure > 0 ? tenure : 1);
 
         for(let y=1; y<=maxYears; y++) {
             if(y > 1) {
                 if((y-1)%freq === 0) cRent *= (1 + esc/100);
-                if(camEsc > 0 && (y-1)%camFreq === 0) cCam *= (1 + camEsc/100);
+                if((y-1)%camFreq === 0) cCam *= (1 + camEsc/100);
             }
             
             let yTotal = 0;
@@ -499,12 +450,15 @@
 
                 if (rfDays > 0) {
                     let isFree = false;
-                    if ((rfType === 'start' && gm <= rfDays) || (rfType === 'yearly' && m <= rfDays) || (rfType === 'end' && gm > (tenure*12 - rfDays)) || (rfType === 'escalation' && isEscalationYear && m <= rfDays)) isFree = true;
+                    if ((rfType === 'start' && gm <= rfDays) || 
+                        (rfType === 'yearly' && m <= rfDays) || 
+                        (rfType === 'end' && gm > (tenure*12 - rfDays)) || 
+                        (rfType === 'escalation' && isEscalationYear && m <= rfDays)) isFree = true;
                     if(isFree) effRent = 0;
                 }
 
-                let appliedFit = fitoutType === 'warm' ? 0 : fitRent;
-                let mCost = (effRent + cCam + appliedFit) * area;
+                let appliedFitRent = fitoutType === 'warm' ? 0 : fitRent;
+                let mCost = (effRent + cCam + appliedFitRent) * area;
                 yTotal += mCost; runFlow += mCost; monthlyFlows.push(mCost);
             }
             
@@ -513,11 +467,13 @@
             csvRows.push([y, cRent, cCam, fitRent, (cRent+cCam+(fitoutType==='warm'?0:fitRent)), yTotal/12, yTotal]);
         }
 
+        document.getElementById('tableHead').innerHTML = `<tr><th class="pl-4 text-left">Period</th><th>Base Rent</th><th>OpEx</th><th>Fit-out</th><th>Total PSF</th><th>Monthly Avg</th><th class="pr-4">Annual Total</th></tr>`;
         document.getElementById('tableBody').innerHTML = rows;
-        updateKPI('kpiTotal', formatMoney(runFlow, true));
-        updateKPI('kpiNER', formatMoney(runFlow / (tenure*12) / (area || 1)));
-        updateKPI('kpiNPV', formatMoney(NPV(discount, monthlyFlows), true));
-        updateKPI('kpiMonthly', formatMoney(runFlow / (tenure*12), true));
+
+        updateKPI('out_Total', formatMoney(runFlow, true));
+        updateKPI('out_NER', formatMoney(runFlow / (tenure*12) / (area || 1)));
+        updateKPI('out_NPV', formatMoney(NPV(discount, monthlyFlows), true));
+        updateKPI('out_Monthly', formatMoney(runFlow / (tenure*12), true));
         
         exportData = { type: 'Conventional', headers: ['Year', 'Base Rent', 'OpEx', 'Fitout', 'Total PSF', 'Monthly', 'Annual'], rows: csvRows };
     }
@@ -532,15 +488,15 @@
         const pPrice = get('mgdParkPrice');
         const discount = get('mgdDiscount');
 
-        let totalFlow = 0, monthlyFlows = [], runFlow = 0;
-        let cRate = rate;
+        let runFlow = 0, monthlyFlows = [], cRate = rate;
         let rows = '', csvRows = [];
         const maxYears = Math.ceil(tenure > 0 ? tenure : 1);
 
         for(let y=1; y<=maxYears; y++) {
             if(y > 1) cRate *= (1 + esc/100);
             let mSeat = qty * cRate;
-            let mTotal = mSeat + (pSlots*pPrice);
+            let mPark = pSlots * pPrice;
+            let mTotal = mSeat + mPark;
             let yTotal = 0;
 
             for(let m=1; m<=12; m++) {
@@ -551,28 +507,34 @@
             csvRows.push([y, cRate, pSlots*pPrice, mTotal, yTotal]);
         }
 
+        // Dynamic Header for Managed
+        const rateLabel = mgdBasis === 'seat' ? 'Seat Rate' : 'Sq.Ft Rate';
+        document.getElementById('tableHead').innerHTML = `<tr><th class="pl-4 text-left">Period</th><th>${rateLabel}</th><th>Parking Total</th><th>Monthly Total</th><th class="pr-4">Annual Total</th></tr>`;
         document.getElementById('tableBody').innerHTML = rows;
-        const divisor = mgdBasis === 'seat' ? qty : qty; 
-        updateKPI('kpiTotal', formatMoney(runFlow, true));
-        updateKPI('kpiNER', formatMoney(runFlow / (tenure*12) / (divisor||1)));
-        updateKPI('kpiNPV', formatMoney(NPV(discount, monthlyFlows), true));
-        updateKPI('kpiMonthly', formatMoney(runFlow / (tenure*12), true));
-        
-        exportData = { type: 'Managed', headers: ['Year', 'Seat Rate', 'Parking', 'Monthly', 'Annual'], rows: csvRows };
-    }
 
+        const divisor = mgdBasis === 'seat' ? qty : qty; 
+        updateKPI('out_Total', formatMoney(runFlow, true));
+        updateKPI('out_NER', formatMoney(runFlow / (tenure*12) / (divisor||1)));
+        updateKPI('out_NPV', formatMoney(NPV(discount, monthlyFlows), true));
+        updateKPI('out_Monthly', formatMoney(runFlow / (tenure*12), true));
+        
+        exportData = { type: 'Managed', headers: ['Year', rateLabel, 'Parking', 'Monthly', 'Annual'], rows: csvRows };
+    }
+    
     function updateKPI(id, val) {
         const el = document.getElementById(id);
         if(el) el.innerText = val;
     }
 
+    // --- UTILS ---
     const fmtUSD = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
-    const fmtINR = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 });
+    const fmtINR = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 2 });
     
     function formatMoney(val, large=false) {
         let v = currencyMode === 'USD' ? val / USD_RATE : val;
         if (currencyMode === 'USD') {
             if (large && v >= 1000000) return '$' + (v/1000000).toFixed(2) + ' Mn';
+            if (large && v >= 1000) return '$' + (v/1000).toFixed(2) + ' K';
             return fmtUSD.format(v);
         } else {
             if (large && v >= 10000000) return '₹' + (v/10000000).toFixed(2) + ' Cr';
@@ -581,8 +543,11 @@
         }
     }
     function getCurrencySymbol() { return currencyMode === 'USD' ? '$' : '₹'; }
-    function formatRate(val) { let v = currencyMode === 'USD' ? val / USD_RATE : val; return (currencyMode === 'USD' ? fmtUSD : fmtINR).format(v); }
-
+    function formatRate(val) { 
+        let v = currencyMode === 'USD' ? val / USD_RATE : val;
+        if (currencyMode === 'USD') return fmtUSD.format(v);
+        return fmtINR.format(v); 
+    }
     async function fetchRate() {
         try {
             const res = await fetch('https://open.er-api.com/v6/latest/USD');
@@ -602,7 +567,7 @@
         csvContent += exportData.headers.join(",") + "\n";
         exportData.rows.forEach(r => csvContent += r.join(",") + "\n");
         const link = document.createElement("a");
-        link.setAttribute("href", encodeURI(csvContent));
+        link.setAttribute("href", encodedUri = encodeURI(csvContent));
         link.setAttribute("download", `${proj}_Cashflow.csv`);
         document.body.appendChild(link); link.click(); document.body.removeChild(link);
     }
